@@ -1,3 +1,4 @@
+import 'package:blog_project/features/posts/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
@@ -27,6 +28,13 @@ class _LoginPageState extends State<LoginPage> {
           if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),
+            );
+          } else if (state is AuthAuthenticated) {
+            // Navigate to the main app page or home page
+            // Navigator.of(context).pushReplacementNamed('/posts');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const PostPage()),
             );
           }
         },

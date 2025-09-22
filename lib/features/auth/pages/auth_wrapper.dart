@@ -1,3 +1,4 @@
+import 'package:blog_project/features/posts/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
@@ -19,7 +20,7 @@ class AuthWrapper extends StatelessWidget {
               ),
             );
           case AuthAuthenticated():
-            // return HomePage(user: state.user);
+            return PostPage();
           case AuthUnauthenticated():
           case AuthError():
             return const LoginPage();
