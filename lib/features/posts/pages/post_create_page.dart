@@ -1,4 +1,5 @@
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
+import 'package:blog_project/features/posts/bloc/posts_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,13 +59,14 @@ class _PostCreateViewState extends State<PostCreateView> {
             //     previous.status != current.status,
             builder: (context, state) {
               return TextButton(
-                onPressed: state.isFormValid && state.status != PostCreateStatus.loading
-                    ? () => context.read<PostCreateBloc>().add(const PostSubmitted())
-                    : null,
-                child: state.status == PostCreateStatus.loading
+                onPressed: state is PostLoading
+                    ? null
+                    : () => context.read<PostBloc>().add(CreatePost(
+                    title: 'title', content: 'content', authorId: 'authorId',
+                    categoryId: 'categoryId', tags: ['tags'])),
+                child: state is PostLoading
                     ? const SizedBox(
-                  width: 16,
-                  height: 16,
+                  width: 16, height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
                     : Text(
@@ -72,7 +74,7 @@ class _PostCreateViewState extends State<PostCreateView> {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: state.isFormValid ? Colors.blue : Colors.grey,
+                    color: state. ? Colors.blue : Colors.grey,
                   ),
                 ),
               );
