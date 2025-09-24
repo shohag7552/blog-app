@@ -9,6 +9,8 @@ import 'package:blog_project/features/posts/bloc/posts_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'features/post_create/bloc/post_create_bloc.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
@@ -32,6 +34,11 @@ class MyApp extends StatelessWidget {
             create: (context) => AuthBloc(
               authRepository: context.read<AuthRepository>(),
             )..add(AuthStarted()),
+          ),
+          BlocProvider(
+            create: (context) => PostCreateBloc(
+              postRepository: context.read<PostRepository>(),
+            ),
           ),
           BlocProvider(
             create: (context) => PostBloc(

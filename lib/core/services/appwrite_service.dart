@@ -28,12 +28,20 @@ class AppwriteService {
     required Map<String, dynamic> data,
     String? documentId,
   }) async {
+    final user = await account.get();
+    print('====> database: ${AppwriteConfig.databaseId}, tableId: $collectionId, rowId: $documentId and  with data: $data');
     // return await databases.createRow(databaseId: databaseId, tableId: tableId, rowId: rowId, data: data)
     return await databases.createRow(
       databaseId: AppwriteConfig.databaseId,
       tableId: collectionId,
       rowId: documentId ?? ID.unique(),
       data: data,
+      permissions: [
+        // Permission.read(Role.user(user.$id)),   // only this user can read
+        // Permission.update(Role.user(user.$id)), // only this user can update
+        // Permission.delete(Role.user(user.$id)), // only this user can delete
+        Permission.write(Role.user(user.$id)),  // only this user can write
+      ],
     );
   }
 

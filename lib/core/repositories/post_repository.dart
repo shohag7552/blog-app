@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:blog_project/core/configuratio/appwrite_config.dart';
 import '../services/appwrite_service.dart';
@@ -63,12 +66,12 @@ class PostRepository {
       final data = {
         'title': title,
         'content': content,
-        'author': authorId,
-        'category': categoryId,
-        'tags': tags,
+        'author_id': authorId,
+        'category_id': categoryId,
+        'tags': jsonEncode(tags),
         'likes': 0,
-        'createdAt': now.toIso8601String(),
-        'updatedAt': now.toIso8601String(),
+        // 'createdAt': now.toIso8601String(),
+        // 'updatedAt': now.toIso8601String(),
       };
 
       final response = await _appwriteService.createDocument(
@@ -78,6 +81,7 @@ class PostRepository {
 
       return PostModel.fromMap(response.data);
     } catch (e) {
+      log('==> Error creating post: $e');
       throw Exception('Failed to create post: $e');
     }
   }

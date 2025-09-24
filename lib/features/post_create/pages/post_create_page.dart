@@ -1,4 +1,9 @@
+import 'package:blog_project/core/models/post_model.dart';
+import 'package:blog_project/features/post_create/bloc/post_create_bloc.dart';
+import 'package:blog_project/features/post_create/bloc/post_create_event.dart';
+import 'package:blog_project/features/post_create/bloc/post_create_state.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
+import 'package:blog_project/features/posts/bloc/posts_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -52,19 +57,26 @@ class _PostCreateViewState extends State<PostCreateView> {
           ),
         ),
         actions: [
-          BlocBuilder<PostBloc, PostState>(
+          BlocBuilder<PostCreateBloc, PostCreateState>(
             // buildWhen: (previous, current) =>
             // previous.isFormValid != current.isFormValid ||
             //     previous.status != current.status,
             builder: (context, state) {
               return TextButton(
-                onPressed: state.isFormValid && state.status != PostCreateStatus.loading
-                    ? () => context.read<PostCreateBloc>().add(const PostSubmitted())
-                    : null,
-                child: state.status == PostCreateStatus.loading
+                onPressed: state is PostCreateLoading
+                    ? null
+                    : () => context.read<PostCreateBloc>().add(CreatePost(PostModel(
+                  postId: '',
+                  title: _titleController.text,
+                  content: _contentController.text,
+                  tags: ['hi'],
+                  likes: 0,
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                ))),
+                child: state is PostLoading
                     ? const SizedBox(
-                  width: 16,
-                  height: 16,
+                  width: 16, height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
                     : Text(
@@ -72,7 +84,7 @@ class _PostCreateViewState extends State<PostCreateView> {
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 16,
-                    color: state.isFormValid ? Colors.blue : Colors.grey,
+                    color: Colors.blue,
                   ),
                 ),
               );
@@ -83,20 +95,14 @@ class _PostCreateViewState extends State<PostCreateView> {
       ),
       body: BlocListener<PostCreateBloc, PostCreateState>(
         listener: (context, state) {
-          if (state.status == PostCreateStatus.success) {
+          if (state is PostCreateSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Post created successfully!'),
-                backgroundColor: Colors.green,
-              ),
+              const SnackBar(content: Text("Post created successfully!")),
             );
-            Navigator.of(context).pop();
-          } else if (state.status == PostCreateStatus.failure) {
+            Navigator.pop(context); // Go back after success
+          } else if (state is PostCreateFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? 'Failed to create post'),
-                backgroundColor: Colors.red,
-              ),
+              SnackBar(content: Text(state.message)),
             );
           }
         },
@@ -160,7 +166,7 @@ class _PostCreateViewState extends State<PostCreateView> {
           fontWeight: FontWeight.w600,
         ),
         onChanged: (value) {
-          context.read<PostCreateBloc>().add(PostTitleChanged(value));
+          // context.read<PostCreateBloc>().add(PostTitleChanged(value));
         },
       ),
     );
@@ -191,7 +197,7 @@ class _PostCreateViewState extends State<PostCreateView> {
         ),
         style: const TextStyle(fontSize: 16, height: 1.5),
         onChanged: (value) {
-          context.read<PostCreateBloc>().add(PostContentChanged(value));
+          // context.read<PostCreateBloc>().add(PostContentChanged(value));
         },
       ),
     );
@@ -219,9 +225,9 @@ class _PostCreateViewState extends State<PostCreateView> {
         ),
         const SizedBox(height: 12),
         BlocBuilder<PostCreateBloc, PostCreateState>(
-          buildWhen: (previous, current) => previous.images != current.images,
+          // buildWhen: (previous, current) => previous.images != current.images,
           builder: (context, state) {
-            if (state.images.isEmpty) {
+            // if (state.images.isEmpty) {
               return Container(
                 height: 120,
                 decoration: BoxDecoration(
@@ -242,54 +248,54 @@ class _PostCreateViewState extends State<PostCreateView> {
               );
             }
 
-            return SizedBox(
-              height: 120,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: state.images.length,
-                itemBuilder: (context, index) {
-                  final imagePath = state.images[index];
-                  return Container(
-                    margin: const EdgeInsets.only(right: 12),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.file(
-                            File(imagePath),
-                            width: 120,
-                            height: 120,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        Positioned(
-                          top: 4,
-                          right: 4,
-                          child: GestureDetector(
-                            onTap: () => context
-                                .read<PostCreateBloc>()
-                                .add(PostImageRemoved(imagePath)),
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            );
-          },
+            // return SizedBox(
+            //   height: 120,
+            //   child: ListView.builder(
+            //     scrollDirection: Axis.horizontal,
+            //     itemCount: state.images.length,
+            //     itemBuilder: (context, index) {
+            //       final imagePath = state.images[index];
+            //       return Container(
+            //         margin: const EdgeInsets.only(right: 12),
+            //         child: Stack(
+            //           children: [
+            //             ClipRRect(
+            //               borderRadius: BorderRadius.circular(12),
+            //               child: Image.file(
+            //                 File(imagePath),
+            //                 width: 120,
+            //                 height: 120,
+            //                 fit: BoxFit.cover,
+            //               ),
+            //             ),
+            //             Positioned(
+            //               top: 4,
+            //               right: 4,
+            //               child: GestureDetector(
+            //                 onTap: () => context
+            //                     .read<PostCreateBloc>()
+            //                     .add(PostImageRemoved(imagePath)),
+            //                 child: Container(
+            //                   padding: const EdgeInsets.all(4),
+            //                   decoration: const BoxDecoration(
+            //                     color: Colors.red,
+            //                     shape: BoxShape.circle,
+            //                   ),
+            //                   child: const Icon(
+            //                     Icons.close,
+            //                     color: Colors.white,
+            //                     size: 16,
+            //                   ),
+            //                 ),
+            //               ),
+            //             ),
+            //           ],
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // );
+          // },
         ),
       ],
     );
@@ -328,9 +334,9 @@ class _PostCreateViewState extends State<PostCreateView> {
         ),
       ],
       onSelected: (fromCamera) {
-        context.read<PostCreateBloc>().add(
-          PostImagePickerRequested(fromCamera: fromCamera),
-        );
+        // context.read<PostCreateBloc>().add(
+        //   PostImagePickerRequested(fromCamera: fromCamera),
+        // );
       },
     );
   }
@@ -358,7 +364,7 @@ class _PostCreateViewState extends State<PostCreateView> {
           prefixIcon: Icon(Icons.location_on, color: Colors.grey),
         ),
         onChanged: (value) {
-          context.read<PostCreateBloc>().add(PostLocationChanged(value));
+          // context.read<PostCreateBloc>().add(PostLocationChanged(value));
         },
       ),
     );
@@ -406,57 +412,57 @@ class _PostCreateViewState extends State<PostCreateView> {
             ),
             onSubmitted: (value) {
               if (value.trim().isNotEmpty) {
-                context.read<PostCreateBloc>().add(PostTagAdded(value.trim()));
+                // context.read<PostCreateBloc>().add(PostTagAdded(value.trim()));
                 _tagController.clear();
               }
             },
           ),
         ),
         const SizedBox(height: 12),
-        BlocBuilder<PostCreateBloc, PostCreateState>(
-          buildWhen: (previous, current) => previous.tags != current.tags,
-          builder: (context, state) {
-            if (state.tags.isEmpty) return const SizedBox.shrink();
-
-            return Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: state.tags.map((tag) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.blue[200]!),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '#$tag',
-                        style: TextStyle(
-                          color: Colors.blue[700],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      GestureDetector(
-                        onTap: () => context
-                            .read<PostCreateBloc>()
-                            .add(PostTagRemoved(tag)),
-                        child: Icon(
-                          Icons.close,
-                          size: 16,
-                          color: Colors.blue[700],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            );
-          },
-        ),
+        // BlocBuilder<PostCreateBloc, PostCreateState>(
+        //   buildWhen: (previous, current) => previous.tags != current.tags,
+        //   builder: (context, state) {
+        //     if (state.tags.isEmpty) return const SizedBox.shrink();
+        //
+        //     return Wrap(
+        //       spacing: 8,
+        //       runSpacing: 8,
+        //       children: state.tags.map((tag) {
+        //         return Container(
+        //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        //           decoration: BoxDecoration(
+        //             color: Colors.blue[50],
+        //             borderRadius: BorderRadius.circular(20),
+        //             border: Border.all(color: Colors.blue[200]!),
+        //           ),
+        //           child: Row(
+        //             mainAxisSize: MainAxisSize.min,
+        //             children: [
+        //               Text(
+        //                 '#$tag',
+        //                 style: TextStyle(
+        //                   color: Colors.blue[700],
+        //                   fontWeight: FontWeight.w500,
+        //                 ),
+        //               ),
+        //               const SizedBox(width: 4),
+        //               GestureDetector(
+        //                 onTap: () => context
+        //                     .read<PostCreateBloc>()
+        //                     .add(PostTagRemoved(tag)),
+        //                 child: Icon(
+        //                   Icons.close,
+        //                   size: 16,
+        //                   color: Colors.blue[700],
+        //                 ),
+        //               ),
+        //             ],
+        //           ),
+        //         );
+        //       }).toList(),
+        //     );
+        //   },
+        // ),
       ],
     );
   }
