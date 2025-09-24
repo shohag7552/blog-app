@@ -1,3 +1,4 @@
+import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,7 +35,7 @@ class _LoginPageState extends State<LoginPage> {
             // Navigator.of(context).pushReplacementNamed('/posts');
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const PostPage()),
+              MaterialPageRoute(builder: (_) => const PostCreatePage()),
             );
           }
         },

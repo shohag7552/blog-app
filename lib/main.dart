@@ -4,6 +4,7 @@ import 'package:blog_project/core/repositories/post_repository.dart';
 import 'package:blog_project/features/auth/bloc/auth_bloc.dart';
 import 'package:blog_project/features/auth/pages/auth_wrapper.dart';
 import 'package:blog_project/features/comments/bloc/comment_bloc.dart';
+import 'package:blog_project/features/post_create/bloc/post_create_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +33,11 @@ class MyApp extends StatelessWidget {
             create: (context) => AuthBloc(
               authRepository: context.read<AuthRepository>(),
             )..add(AuthStarted()),
+          ),
+          BlocProvider(
+            create: (context) => PostCreateBloc(
+              postRepository: context.read<PostRepository>(),
+            ),
           ),
           BlocProvider(
             create: (context) => PostBloc(

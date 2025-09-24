@@ -35,7 +35,7 @@ class CommentRepository {
         'createdAt': DateTime.now().toIso8601String(),
       };
 
-      final response = await _appwriteService.createDocument(
+      final response = await _appwriteService.createRow(
         collectionId: AppwriteConfig.commentsCollection,
         data: data,
       );

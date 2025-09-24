@@ -71,7 +71,7 @@ class PostRepository {
         'updatedAt': now.toIso8601String(),
       };
 
-      final response = await _appwriteService.createDocument(
+      final response = await _appwriteService.createRow(
         collectionId: AppwriteConfig.postsCollection,
         data: data,
       );

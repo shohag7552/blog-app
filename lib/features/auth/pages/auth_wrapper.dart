@@ -1,3 +1,4 @@
+import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/pages/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,6 +21,7 @@ class AuthWrapper extends StatelessWidget {
               ),
             );
           case AuthAuthenticated():
+            return PostCreatePage();
             return PostPage();
           case AuthUnauthenticated():
           case AuthError():

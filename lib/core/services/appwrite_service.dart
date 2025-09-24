@@ -23,7 +23,7 @@ class AppwriteService {
   }
 
   // Database operations
-  Future<Row> createDocument({
+  Future<Row> createRow({
     required String collectionId,
     required Map<String, dynamic> data,
     String? documentId,
