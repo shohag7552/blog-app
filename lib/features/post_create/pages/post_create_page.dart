@@ -1,3 +1,6 @@
+
+import 'dart:io';
+
 import 'package:blog_project/core/models/post_model.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_bloc.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_event.dart';
@@ -7,6 +10,7 @@ import 'package:blog_project/features/posts/bloc/posts_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostCreatePage extends StatelessWidget {
   const PostCreatePage({Key? key}) : super(key: key);
@@ -228,6 +232,7 @@ class _PostCreateViewState extends State<PostCreateView> {
           // buildWhen: (previous, current) => previous.images != current.images,
           builder: (context, state) {
             // if (state.images.isEmpty) {
+            if (state is! PostCreateWithImages || state.images.isEmpty) {
               return Container(
                 height: 120,
                 decoration: BoxDecoration(
@@ -248,54 +253,52 @@ class _PostCreateViewState extends State<PostCreateView> {
               );
             }
 
-            // return SizedBox(
-            //   height: 120,
-            //   child: ListView.builder(
-            //     scrollDirection: Axis.horizontal,
-            //     itemCount: state.images.length,
-            //     itemBuilder: (context, index) {
-            //       final imagePath = state.images[index];
-            //       return Container(
-            //         margin: const EdgeInsets.only(right: 12),
-            //         child: Stack(
-            //           children: [
-            //             ClipRRect(
-            //               borderRadius: BorderRadius.circular(12),
-            //               child: Image.file(
-            //                 File(imagePath),
-            //                 width: 120,
-            //                 height: 120,
-            //                 fit: BoxFit.cover,
-            //               ),
-            //             ),
-            //             Positioned(
-            //               top: 4,
-            //               right: 4,
-            //               child: GestureDetector(
-            //                 onTap: () => context
-            //                     .read<PostCreateBloc>()
-            //                     .add(PostImageRemoved(imagePath)),
-            //                 child: Container(
-            //                   padding: const EdgeInsets.all(4),
-            //                   decoration: const BoxDecoration(
-            //                     color: Colors.red,
-            //                     shape: BoxShape.circle,
-            //                   ),
-            //                   child: const Icon(
-            //                     Icons.close,
-            //                     color: Colors.white,
-            //                     size: 16,
-            //                   ),
-            //                 ),
-            //               ),
-            //             ),
-            //           ],
-            //         ),
-            //       );
-            //     },
-            //   ),
-            // );
-          // },
+            return SizedBox(
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.images.length,
+                itemBuilder: (context, index) {
+                  XFile imagePath = state.images[index];
+                  return Container(
+                    margin: const EdgeInsets.only(right: 12),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(
+                            File(imagePath.path),
+                            width: 120,
+                            height: 120,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: GestureDetector(
+                            onTap: () => context.read<PostCreateBloc>().add(RemoveImage(index)),
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
+          },
         ),
       ],
     );
@@ -334,9 +337,10 @@ class _PostCreateViewState extends State<PostCreateView> {
         ),
       ],
       onSelected: (fromCamera) {
-        // context.read<PostCreateBloc>().add(
-        //   PostImagePickerRequested(fromCamera: fromCamera),
-        // );
+        if(!fromCamera) {
+          context.read<PostCreateBloc>().add(PickImages());
+          return;
+        }
       },
     );
   }
