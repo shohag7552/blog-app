@@ -77,6 +77,7 @@ class _PostCreateViewState extends State<PostCreateView> {
                   likes: 0,
                   createdAt: DateTime.now(),
                   updatedAt: DateTime.now(),
+                  image: state is PostCreateWithImages && state.images.isNotEmpty ? state.images.first : null,
                 ))),
                 child: state is PostLoading
                     ? const SizedBox(

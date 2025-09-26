@@ -51,6 +51,7 @@ class PostCreateBloc extends Bloc<PostCreateEvent, PostCreateState> {
         authorId: event.post.author?.userId ?? '',
         categoryId: event.post.category?.categoryId??'',
         tags: event.post.tags,
+        image: event.post.image!,
       );
 
       print('=====> Created Post: ${post.toMap()} =====');

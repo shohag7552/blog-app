@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:appwrite/appwrite.dart';
 import 'package:blog_project/core/configuratio/appwrite_config.dart';
+import 'package:image_picker/image_picker.dart';
 import '../services/appwrite_service.dart';
 import '../models/post_model.dart';
 
@@ -60,6 +61,7 @@ class PostRepository {
     required String authorId,
     required String categoryId,
     required List<String> tags,
+    required XFile image,
   }) async {
     try {
       final now = DateTime.now();
@@ -74,12 +76,13 @@ class PostRepository {
         // 'updatedAt': now.toIso8601String(),
       };
 
-      final response = await _appwriteService.createDocument(
-        collectionId: AppwriteConfig.postsCollection,
-        data: data,
-      );
+      final response = await _appwriteService.uploadImage(image);
+      // final response = await _appwriteService.createDocument(
+      //   collectionId: AppwriteConfig.postsCollectiondata    //   data: data,
+      // );
 
-      return PostModel.fromMap(response.data);
+      return PostModel(postId: '', content: '', tags: [], likes: 0, createdAt: DateTime.now(), updatedAt: DateTime.now(), title: '');
+      // return PostModel.fromMap(response.data);
     } catch (e) {
       log('==> Error creating post: $e');
       throw Exception('Failed to create post: $e');

@@ -3,6 +3,7 @@
 import 'package:blog_project/core/models/category_model.dart';
 import 'package:blog_project/core/models/user_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 
 class PostModel extends Equatable {
   final String postId;
@@ -14,6 +15,7 @@ class PostModel extends Equatable {
   final int likes;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final XFile? image;
 
   const PostModel({
     required this.postId,
@@ -25,6 +27,7 @@ class PostModel extends Equatable {
     required this.likes,
     required this.createdAt,
     required this.updatedAt,
+    this.image,
   });
 
   factory PostModel.fromMap(Map<String, dynamic> map) {
@@ -38,6 +41,7 @@ class PostModel extends Equatable {
       likes: map['likes'] ?? 0,
       createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
       updatedAt: DateTime.parse(map['updatedAt'] ?? DateTime.now().toIso8601String()),
+      image: map['image'] != null ? XFile(map['image']) : null,
     );
   }
 
@@ -51,9 +55,10 @@ class PostModel extends Equatable {
       'likes': likes,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
+      'image': image?.path,
     };
   }
 
   @override
-  List<Object?> get props => [postId, title, content, author, category, tags, likes, createdAt, updatedAt];
+  List<Object?> get props => [postId, title, content, author, category, tags, likes, createdAt, updatedAt, image];
 }
