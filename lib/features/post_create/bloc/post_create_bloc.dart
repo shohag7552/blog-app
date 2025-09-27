@@ -16,6 +16,18 @@ class PostCreateBloc extends Bloc<PostCreateEvent, PostCreateState> {
     on<CreatePost>(_onCreatePost);
     on<PickImages>(_onPickImages);
     on<RemoveImage>(_onRemoveImage);
+    on<PostTagAdded>(_onPostTagAdded);
+    on<PostTagRemoved>(_onPostTagRemoved);
+  }
+
+  void _onPostTagAdded(PostTagAdded event, Emitter<PostCreateState> emit) {
+    final updatedTags = List<String>.from(state.tags)..add(event.tag);
+    emit(PostCreateWithTags(images: state.images, tags: updatedTags));
+  }
+
+  void _onPostTagRemoved(PostTagRemoved event, Emitter<PostCreateState> emit) {
+    final updatedTags = List<String>.from(state.tags)..remove(event.tag);
+    emit(PostCreateWithTags(images: state.images, tags: updatedTags));
   }
 
   Future<void> _onPickImages(PickImages event, Emitter<PostCreateState> emit) async {
@@ -23,10 +35,8 @@ class PostCreateBloc extends Bloc<PostCreateEvent, PostCreateState> {
     try {
       final picked = await picker.pickMultiImage();
       if (picked.isNotEmpty) {
-        final currentImages = state is PostCreateWithImages
-            ? (state as PostCreateWithImages).images
-            : [];
-        emit(PostCreateWithImages(images: [...currentImages, ...picked]));
+        final currentImages = state.images;
+        emit(PostCreateWithImages(images: [...currentImages, ...picked], tags: state.tags));
       }
     } catch (e) {
       print("Error picking images: $e");
@@ -34,16 +44,15 @@ class PostCreateBloc extends Bloc<PostCreateEvent, PostCreateState> {
   }
 
   void _onRemoveImage(RemoveImage event, Emitter<PostCreateState> emit) {
-    if (state is PostCreateWithImages) {
-      final updated = List<XFile>.from((state as PostCreateWithImages).images)
-        ..removeAt(event.index);
-      emit(PostCreateWithImages(images: updated));
+    if (state.images.isNotEmpty) {
+      final updatedImages = List<XFile>.from(state.images)..removeAt(event.index);
+      emit(PostCreateWithImages(images: updatedImages, tags: state.tags));
     }
   }
 
   Future<void> _onCreatePost(CreatePost event, Emitter<PostCreateState> emit) async {
     try {
-      emit(PostCreateLoading());
+      emit(PostCreateLoading(images: state.images, tags: state.tags));
 
       final post = await postRepository.createPost(
         title: event.post.title,
@@ -51,13 +60,13 @@ class PostCreateBloc extends Bloc<PostCreateEvent, PostCreateState> {
         authorId: event.post.author?.userId ?? '',
         categoryId: event.post.category?.categoryId??'',
         tags: event.post.tags,
-        image: event.post.image!,
+        images: event.post.image!,
       );
 
       print('=====> Created Post: ${post.toMap()} =====');
-      emit(PostCreateSuccess());
+      emit(PostCreateSuccess(images: state.images, tags: state.tags));
     } catch (e) {
-      emit(PostCreateFailure(e.toString()));
+      emit(PostCreateFailure(e.toString(), images: state.images, tags: state.tags));
     }
   }
 

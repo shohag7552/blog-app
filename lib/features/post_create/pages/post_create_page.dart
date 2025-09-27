@@ -73,11 +73,11 @@ class _PostCreateViewState extends State<PostCreateView> {
                   postId: '',
                   title: _titleController.text,
                   content: _contentController.text,
-                  tags: ['hi'],
+                  tags: state is PostCreateWithTags ? state.tags : [],
                   likes: 0,
                   createdAt: DateTime.now(),
                   updatedAt: DateTime.now(),
-                  image: state is PostCreateWithImages && state.images.isNotEmpty ? state.images.first : null,
+                  image: state is PostCreateWithImages && state.images.isNotEmpty ? state.images : null,
                 ))),
                 child: state is PostLoading
                     ? const SizedBox(
@@ -230,9 +230,8 @@ class _PostCreateViewState extends State<PostCreateView> {
         ),
         const SizedBox(height: 12),
         BlocBuilder<PostCreateBloc, PostCreateState>(
-          // buildWhen: (previous, current) => previous.images != current.images,
+          // buildWhen: (previous, current) => previous != current,
           builder: (context, state) {
-            // if (state.images.isEmpty) {
             if (state is! PostCreateWithImages || state.images.isEmpty) {
               return Container(
                 height: 120,
@@ -417,57 +416,58 @@ class _PostCreateViewState extends State<PostCreateView> {
             ),
             onSubmitted: (value) {
               if (value.trim().isNotEmpty) {
-                // context.read<PostCreateBloc>().add(PostTagAdded(value.trim()));
+                context.read<PostCreateBloc>().add(PostTagAdded(value.trim()));
                 _tagController.clear();
               }
             },
           ),
         ),
         const SizedBox(height: 12),
-        // BlocBuilder<PostCreateBloc, PostCreateState>(
-        //   buildWhen: (previous, current) => previous.tags != current.tags,
-        //   builder: (context, state) {
-        //     if (state.tags.isEmpty) return const SizedBox.shrink();
-        //
-        //     return Wrap(
-        //       spacing: 8,
-        //       runSpacing: 8,
-        //       children: state.tags.map((tag) {
-        //         return Container(
-        //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        //           decoration: BoxDecoration(
-        //             color: Colors.blue[50],
-        //             borderRadius: BorderRadius.circular(20),
-        //             border: Border.all(color: Colors.blue[200]!),
-        //           ),
-        //           child: Row(
-        //             mainAxisSize: MainAxisSize.min,
-        //             children: [
-        //               Text(
-        //                 '#$tag',
-        //                 style: TextStyle(
-        //                   color: Colors.blue[700],
-        //                   fontWeight: FontWeight.w500,
-        //                 ),
-        //               ),
-        //               const SizedBox(width: 4),
-        //               GestureDetector(
-        //                 onTap: () => context
-        //                     .read<PostCreateBloc>()
-        //                     .add(PostTagRemoved(tag)),
-        //                 child: Icon(
-        //                   Icons.close,
-        //                   size: 16,
-        //                   color: Colors.blue[700],
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         );
-        //       }).toList(),
-        //     );
-        //   },
-        // ),
+        BlocBuilder<PostCreateBloc, PostCreateState>(
+          // buildWhen: (previous, current) => previous != current,
+          builder: (context, state) {
+
+            if (state is! PostCreateWithTags || state.tags.isEmpty) return const SizedBox.shrink();
+
+            return Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: state.tags.map((tag) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.blue[200]!),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '#$tag',
+                        style: TextStyle(
+                          color: Colors.blue[700],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () => context
+                            .read<PostCreateBloc>()
+                            .add(PostTagRemoved(tag)),
+                        child: Icon(
+                          Icons.close,
+                          size: 16,
+                          color: Colors.blue[700],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            );
+          },
+        ),
       ],
     );
   }

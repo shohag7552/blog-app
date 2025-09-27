@@ -123,7 +123,7 @@ class AppwriteService {
     await account.updatePassword(password: password, oldPassword: oldPassword);
   }
 
-  Future<(String? url, String? fileId)> uploadImage(XFile file) async {
+  Future<String?> uploadImage(XFile file) async {
     try {
       final result = await storage.createFile(
         bucketId: AppwriteConfig.postsBucketId,     // Create bucket in Appwrite console
@@ -141,10 +141,10 @@ class AppwriteService {
       final fileUrl = 'https://cloud.appwrite.io/v1/storage/buckets/${AppwriteConfig.postsBucketId}/files/${result.$id}/view?project=${AppwriteConfig.projectId}';
 
       log(fileUrl);
-      return (fileUrl, result.$id);
+      return fileUrl;
     } catch (e) {
       print("Upload error: $e");
-      return (null, null);
+      return null;
     }
   }
 

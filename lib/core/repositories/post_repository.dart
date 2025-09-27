@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:appwrite/appwrite.dart';
+import 'package:appwrite/models.dart';
 import 'package:blog_project/core/configuratio/appwrite_config.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/appwrite_service.dart';
@@ -61,28 +62,42 @@ class PostRepository {
     required String authorId,
     required String categoryId,
     required List<String> tags,
-    required XFile image,
+    required List<XFile>? images,
   }) async {
     try {
+      List<String> imageUrls = [];
+      log('===> Images length: ${images?.length}');
+      if(images == null) {
+        for(XFile image in images!) {
+          log('===> Image path: ${image.path}');
+          String? url = await _appwriteService.uploadImage(image);
+          if(url != null) {
+            imageUrls.add(url);
+          }
+        }
+      }
+
+      User user = await _appwriteService.getCurrentUser();
+
       final now = DateTime.now();
       final data = {
         'title': title,
         'content': content,
-        'author_id': authorId,
+        'author_id': authorId.isNotEmpty ? authorId : user.$id,
         'category_id': categoryId,
         'tags': jsonEncode(tags),
         'likes': 0,
+        'images': jsonEncode(imageUrls),
         // 'createdAt': now.toIso8601String(),
         // 'updatedAt': now.toIso8601String(),
       };
 
-      final response = await _appwriteService.uploadImage(image);
-      // final response = await _appwriteService.createDocument(
-      //   collectionId: AppwriteConfig.postsCollectiondata    //   data: data,
-      // );
+      final response = await _appwriteService.createDocument(
+        collectionId: AppwriteConfig.postsCollection, data: data,
+      );
 
-      return PostModel(postId: '', content: '', tags: [], likes: 0, createdAt: DateTime.now(), updatedAt: DateTime.now(), title: '');
-      // return PostModel.fromMap(response.data);
+      // return PostModel(postId: '', content: '', tags: [], likes: 0, createdAt: DateTime.now(), updatedAt: DateTime.now(), title: '');
+      return PostModel.fromMap(response.data);
     } catch (e) {
       log('==> Error creating post: $e');
       throw Exception('Failed to create post: $e');

@@ -9,6 +9,16 @@ class RemoveImage extends PostCreateEvent {
   RemoveImage(this.index);
 }
 
+class PostTagAdded extends PostCreateEvent {
+  final String tag;
+  PostTagAdded(this.tag);
+}
+
+class PostTagRemoved extends PostCreateEvent {
+  final String tag;
+  PostTagRemoved(this.tag);
+}
+
 class CreatePost extends PostCreateEvent {
   final PostModel post;
 

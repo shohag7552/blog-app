@@ -15,7 +15,7 @@ class PostModel extends Equatable {
   final int likes;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final XFile? image;
+  final List<XFile>? image;
 
   const PostModel({
     required this.postId,
@@ -41,7 +41,7 @@ class PostModel extends Equatable {
       likes: map['likes'] ?? 0,
       createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
       updatedAt: DateTime.parse(map['updatedAt'] ?? DateTime.now().toIso8601String()),
-      image: map['image'] != null ? XFile(map['image']) : null,
+      image: map['image'] != null ? [XFile(map['image'])] : null
     );
   }
 
@@ -55,7 +55,7 @@ class PostModel extends Equatable {
       'likes': likes,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
-      'image': image?.path,
+      'image': image?.map((img) => img.path).toList(),
     };
   }
 
