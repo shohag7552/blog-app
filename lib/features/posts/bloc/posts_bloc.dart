@@ -14,7 +14,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }) : super(PostInitial()) {
     on<LoadPosts>(_onLoadPosts);
     on<LoadPostDetail>(_onLoadPostDetail);
-    on<CreatePost>(_onCreatePost);
+    // on<CreatePost>(_onCreatePost);
     on<UpdatePost>(_onUpdatePost);
     on<DeletePost>(_onDeletePost);
     on<LikePost>(_onLikePost);
@@ -56,23 +56,23 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  Future<void> _onCreatePost(CreatePost event, Emitter<PostState> emit) async {
-    try {
-      emit(PostLoading());
-
-      final post = await postRepository.createPost(
-        title: event.title,
-        content: event.content,
-        authorId: event.authorId,
-        categoryId: event.categoryId,
-        tags: event.tags,
-      );
-
-      emit(PostCreated(post));
-    } catch (e) {
-      emit(PostError(e.toString()));
-    }
-  }
+  // Future<void> _onCreatePost(CreatePost event, Emitter<PostState> emit) async {
+  //   try {
+  //     emit(PostLoading());
+  //
+  //     final post = await postRepository.createPost(
+  //       title: event.title,
+  //       content: event.content,
+  //       authorId: event.authorId,
+  //       categoryId: event.categoryId,
+  //       tags: event.tags,
+  //     );
+  //
+  //     emit(PostCreated(post));
+  //   } catch (e) {
+  //     emit(PostError(e.toString()));
+  //   }
+  // }
 
   Future<void> _onUpdatePost(UpdatePost event, Emitter<PostState> emit) async {
     try {

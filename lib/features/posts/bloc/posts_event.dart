@@ -41,24 +41,24 @@ class LoadPostDetail extends PostEvent {
   List<Object?> get props => [postId];
 }
 
-class CreatePost extends PostEvent {
-  final String title;
-  final String content;
-  final String authorId;
-  final String categoryId;
-  final List<String> tags;
-
-  const CreatePost({
-    required this.title,
-    required this.content,
-    required this.authorId,
-    required this.categoryId,
-    required this.tags,
-  });
-
-  @override
-  List<Object?> get props => [title, content, authorId, categoryId, tags];
-}
+// class CreatePost extends PostEvent {
+//   final String title;
+//   final String content;
+//   final String authorId;
+//   final String categoryId;
+//   final List<String> tags;
+//
+//   const CreatePost({
+//     required this.title,
+//     required this.content,
+//     required this.authorId,
+//     required this.categoryId,
+//     required this.tags,
+//   });
+//
+//   @override
+//   List<Object?> get props => [title, content, authorId, categoryId, tags];
+// }
 
 class UpdatePost extends PostEvent {
   final String postId;

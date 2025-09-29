@@ -28,6 +28,7 @@ class AppwriteService {
     required Map<String, dynamic> data,
     String? documentId,
   }) async {
+    print('=====> body: $data // collectionId: $collectionId // documentId: $documentId');
     // return await databases.createRow(databaseId: databaseId, tableId: tableId, rowId: rowId, data: data)
     return await databases.createRow(
       databaseId: AppwriteConfig.databaseId,

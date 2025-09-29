@@ -1,4 +1,6 @@
+import 'package:blog_project/core/models/post_model.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_bloc.dart';
+import 'package:blog_project/features/post_create/bloc/post_create_event.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_state.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
@@ -55,31 +57,39 @@ class _PostCreateViewState extends State<PostCreateView> {
           ),
         ),
         actions: [
-          // BlocBuilder<PostCreateBloc, PostCreateState>(
-          //   // buildWhen: (previous, current) =>
-          //   // previous.isFormValid != current.isFormValid ||
-          //   //     previous.status != current.status,
-          //   builder: (context, state) {
-          //     return TextButton(
-          //       onPressed: state is PostCreateLoading
-          //           ? null
-          //           : () => context.read<PostCreateBloc>().add(),
-          //       child: state is PostLoading
-          //           ? const SizedBox(
-          //         width: 16, height: 16,
-          //         child: CircularProgressIndicator(strokeWidth: 2),
-          //       )
-          //           : Text(
-          //         'Post',
-          //         style: TextStyle(
-          //           fontWeight: FontWeight.w600,
-          //           fontSize: 16,
-          //           color: state. ? Colors.blue : Colors.grey,
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // ),
+          BlocBuilder<PostCreateBloc, PostCreateState>(
+            // buildWhen: (previous, current) =>
+            // previous.isFormValid != current.isFormValid ||
+            //     previous.status != current.status,
+            builder: (context, state) {
+              return TextButton(
+                onPressed: state is PostCreateLoading
+                    ? null
+                    : () => context.read<PostCreateBloc>().add(CreatePost(PostModel(
+                  postId: '',
+                  title: _titleController.text,
+                  content: _contentController.text,
+                  tags: ['hi'],
+                  likes: 0,
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                ))),
+                child: state is PostLoading
+                    ? const SizedBox(
+                  width: 16, height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+                    : Text(
+                  'Post',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: Colors.blue,
+                  ),
+                ),
+              );
+            },
+          ),
           const SizedBox(width: 8),
         ],
       ),
