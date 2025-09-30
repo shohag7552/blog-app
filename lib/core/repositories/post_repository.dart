@@ -67,8 +67,8 @@ class PostRepository {
     try {
       List<String> imageUrls = [];
       log('===> Images length: ${images?.length}');
-      if(images == null) {
-        for(XFile image in images!) {
+      if(images != null)  {
+        for(XFile image in images) {
           log('===> Image path: ${image.path}');
           String? url = await _appwriteService.uploadImage(image);
           if(url != null) {
@@ -85,12 +85,14 @@ class PostRepository {
         'content': content,
         'author_id': authorId.isNotEmpty ? authorId : user.$id,
         'category_id': categoryId,
-        'tags': jsonEncode(tags),
+        'tags': tags,
         'likes': 0,
-        'images': jsonEncode(imageUrls),
+        'photos': imageUrls,
         // 'createdAt': now.toIso8601String(),
         // 'updatedAt': now.toIso8601String(),
       };
+
+      print('=====type: ${data['tags'].runtimeType}, value: ${data['tags']} =====');
 
       final response = await _appwriteService.createDocument(
         collectionId: AppwriteConfig.postsCollection, data: data,

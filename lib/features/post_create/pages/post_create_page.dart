@@ -67,19 +67,19 @@ class _PostCreateViewState extends State<PostCreateView> {
             //     previous.status != current.status,
             builder: (context, state) {
               return TextButton(
-                onPressed: state is PostCreateLoading
+                onPressed: state.status == PostCreateStatus.submitting
                     ? null
                     : () => context.read<PostCreateBloc>().add(CreatePost(PostModel(
                   postId: '',
                   title: _titleController.text,
                   content: _contentController.text,
-                  tags: state is PostCreateWithTags ? state.tags : [],
+                  tags: state.tags,
                   likes: 0,
                   createdAt: DateTime.now(),
                   updatedAt: DateTime.now(),
-                  image: state is PostCreateWithImages && state.images.isNotEmpty ? state.images : null,
+                  image: state.images,
                 ))),
-                child: state is PostLoading
+                child: state.status == PostCreateStatus.submitting
                     ? const SizedBox(
                   width: 16, height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
@@ -100,14 +100,14 @@ class _PostCreateViewState extends State<PostCreateView> {
       ),
       body: BlocListener<PostCreateBloc, PostCreateState>(
         listener: (context, state) {
-          if (state is PostCreateSuccess) {
+          if (state.status == PostCreateStatus.success) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Post created successfully!")),
             );
-            Navigator.pop(context); // Go back after success
-          } else if (state is PostCreateFailure) {
+            // Navigator.pop(context); // Go back after success
+          } else if (state.status == PostCreateStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(state.errorMessage ?? "Failed to create post.")),
             );
           }
         },
@@ -150,7 +150,7 @@ class _PostCreateViewState extends State<PostCreateView> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -232,7 +232,7 @@ class _PostCreateViewState extends State<PostCreateView> {
         BlocBuilder<PostCreateBloc, PostCreateState>(
           // buildWhen: (previous, current) => previous != current,
           builder: (context, state) {
-            if (state is! PostCreateWithImages || state.images.isEmpty) {
+            if (state.images.isEmpty) {
               return Container(
                 height: 120,
                 decoration: BoxDecoration(
@@ -277,7 +277,7 @@ class _PostCreateViewState extends State<PostCreateView> {
                           top: 4,
                           right: 4,
                           child: GestureDetector(
-                            onTap: () => context.read<PostCreateBloc>().add(RemoveImage(index)),
+                            onTap: () => context.read<PostCreateBloc>().add(PostImageRemoved(index)),
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: const BoxDecoration(
@@ -338,7 +338,7 @@ class _PostCreateViewState extends State<PostCreateView> {
       ],
       onSelected: (fromCamera) {
         if(!fromCamera) {
-          context.read<PostCreateBloc>().add(PickImages());
+          context.read<PostCreateBloc>().add(PostImagesPicked());
           return;
         }
       },
@@ -427,7 +427,7 @@ class _PostCreateViewState extends State<PostCreateView> {
           // buildWhen: (previous, current) => previous != current,
           builder: (context, state) {
 
-            if (state is! PostCreateWithTags || state.tags.isEmpty) return const SizedBox.shrink();
+            if (state.tags.isEmpty) return const SizedBox.shrink();
 
             return Wrap(
               spacing: 8,

@@ -31,21 +31,29 @@ class AppwriteService {
     required Map<String, dynamic> data,
     String? documentId,
   }) async {
-    final user = await account.get();
-    print('====> database: ${AppwriteConfig.databaseId}, tableId: $collectionId, rowId: $documentId and  with data: $data');
-    // return await databases.createRow(databaseId: databaseId, tableId: tableId, rowId: rowId, data: data)
-    return await databases.createRow(
-      databaseId: AppwriteConfig.databaseId,
-      tableId: collectionId,
-      rowId: documentId ?? ID.unique(),
-      data: data,
-      permissions: [
-        // Permission.read(Role.user(user.$id)),   // only this user can read
-        // Permission.update(Role.user(user.$id)), // only this user can update
-        // Permission.delete(Role.user(user.$id)), // only this user can delete
-        Permission.write(Role.user(user.$id)),  // only this user can write
-      ],
-    );
+
+    try {
+      final user = await account.get();
+      log('====> database: ${AppwriteConfig.databaseId}, tableId: $collectionId, rowId: $documentId and  with data: $data');
+      // return await databases.createRow(databaseId: databaseId, tableId: tableId, rowId: rowId, data: data)
+      return await databases.createRow(
+        databaseId: AppwriteConfig.databaseId,
+        tableId: collectionId,
+        rowId: documentId ?? ID.unique(),
+        data: data,
+        permissions: [
+          // Permission.read(Role.user(user.$id)),   // only this user can read
+          // Permission.update(Role.user(user.$id)), // only this user can update
+          // Permission.delete(Role.user(user.$id)), // only this user can delete
+          Permission.write(Role.user(user.$id)),  // only this user can write
+        ],
+      );
+    } on AppwriteException catch (e) {
+      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+      rethrow;
+    } catch (e) {
+      throw Exception('Failed to create post: $e');
+    }
   }
 
   Future<Row> getDocument({
@@ -97,22 +105,52 @@ class AppwriteService {
   /// Authentication
 
   Future<User> getCurrentUser() async {
-    return await account.get();
+    try {
+      return await account.get();
+
+    } on AppwriteException catch (e) {
+      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+      rethrow;
+    } catch (e) {
+      log('Upload error: $e');
+      rethrow;
+    }
   }
 
   Future<void> signUp({required String email, required String password, required String name}) async {
     log('====> SignUp request- email:$email, name:$name, password:$password');
-    await account.create(userId: ID.unique(), email: email, password: password, name: name);
+    try {
+      await account.create(userId: ID.unique(), email: email, password: password, name: name);
+
+    } on AppwriteException catch (e) {
+      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+    } catch (e) {
+      log('Upload error: $e');
+    }
   }
 
   Future<void> signIn({required String email, required String password}) async {
     log('====> signIn request- email:$email, password:$password');
 
-    await account.createEmailPasswordSession(email: email, password: password);
+    try {
+      await account.createEmailPasswordSession(email: email, password: password);
+
+    } on AppwriteException catch (e) {
+      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+    } catch (e) {
+      log('Upload error: $e');
+    }
   }
 
   Future<void> signOut() async {
-    await account.deleteSession(sessionId: 'current');
+    try {
+      await account.deleteSession(sessionId: 'current');
+
+    } on AppwriteException catch (e) {
+      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+    } catch (e) {
+      log('Upload error: $e');
+    }
   }
 
   Future<void> updateName({required String name}) async {

@@ -1,26 +1,50 @@
 import 'package:blog_project/core/models/post_model.dart';
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 
-abstract class PostCreateEvent {}
+abstract class PostCreateEvent  extends Equatable{
+  const PostCreateEvent();
 
-class PickImages extends PostCreateEvent {}
-class RemoveImage extends PostCreateEvent {
-  final int index;
-  RemoveImage(this.index);
+  @override
+  List<Object?> get props => [];
 }
 
+class PostImagesPicked extends PostCreateEvent {
+  const PostImagesPicked();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class PostImageRemoved extends PostCreateEvent {
+  final int index;
+  const PostImageRemoved(this.index);
+
+  @override
+  List<Object?> get props => [index];
+}
+
+/// Tag events
 class PostTagAdded extends PostCreateEvent {
   final String tag;
-  PostTagAdded(this.tag);
+  const PostTagAdded(this.tag);
+
+  @override
+  List<Object?> get props => [tag];
 }
 
 class PostTagRemoved extends PostCreateEvent {
   final String tag;
-  PostTagRemoved(this.tag);
+  const PostTagRemoved(this.tag);
+
+  @override
+  List<Object?> get props => [tag];
 }
 
 class CreatePost extends PostCreateEvent {
   final PostModel post;
 
-  CreatePost(this.post);
+  const CreatePost(this.post);
+  @override
+  List<Object?> get props => [post];
 }
