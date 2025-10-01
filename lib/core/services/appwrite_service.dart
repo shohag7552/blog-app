@@ -67,15 +67,23 @@ class AppwriteService {
     );
   }
 
-  Future<RowList> listDocuments({
-    required String collectionId,
-    List<String>? queries,
-  }) async {
-    return await databases.listRows(
-      databaseId: AppwriteConfig.databaseId,
-      tableId: collectionId,
-      queries: queries ?? [],
-    );
+  Future<RowList> listDocuments({required String collectionId, List<String>? queries}) async {
+    try {
+      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $collectionId, with queries: $queries');
+
+      return await databases.listRows(
+        databaseId: AppwriteConfig.databaseId,
+        tableId: collectionId,
+        queries: queries ?? [],
+      );
+
+    } on AppwriteException catch (e) {
+      log('===> AppWriteException: ${e.code} ${e.message} ${e.response}');
+      rethrow;
+    } catch (e) {
+      log('Upload error: $e');
+      rethrow;
+    }
   }
 
   Future<Row> updateDocument({
@@ -109,7 +117,7 @@ class AppwriteService {
       return await account.get();
 
     } on AppwriteException catch (e) {
-      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+      log('===> AppWriteException: ${e.code} ${e.message} ${e.response}');
       rethrow;
     } catch (e) {
       log('Upload error: $e');
@@ -123,7 +131,7 @@ class AppwriteService {
       await account.create(userId: ID.unique(), email: email, password: password, name: name);
 
     } on AppwriteException catch (e) {
-      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+      log('===> AppWriteException: ${e.code} ${e.message} ${e.response}');
     } catch (e) {
       log('Upload error: $e');
     }
@@ -136,7 +144,7 @@ class AppwriteService {
       await account.createEmailPasswordSession(email: email, password: password);
 
     } on AppwriteException catch (e) {
-      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+      log('===> AppWriteException: ${e.code} ${e.message} ${e.response}');
     } catch (e) {
       log('Upload error: $e');
     }
@@ -147,7 +155,7 @@ class AppwriteService {
       await account.deleteSession(sessionId: 'current');
 
     } on AppwriteException catch (e) {
-      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+      log('===> AppWriteException: ${e.code} ${e.message} ${e.response}');
     } catch (e) {
       log('Upload error: $e');
     }

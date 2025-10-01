@@ -20,16 +20,18 @@ class LoadPosts extends PostEvent {
   final String? authorId;
   final int limit;
   final int offset;
+  final bool loadMore;
 
   const LoadPosts({
     this.categoryId,
     this.authorId,
     this.limit = 10,
     this.offset = 0,
+    this.loadMore = false,
   });
 
   @override
-  List<Object?> get props => [categoryId, authorId, limit, offset];
+  List<Object?> get props => [categoryId, authorId, limit, offset, loadMore];
 }
 
 class LoadPostDetail extends PostEvent {
@@ -60,34 +62,34 @@ class LoadPostDetail extends PostEvent {
 //   List<Object?> get props => [title, content, authorId, categoryId, tags];
 // }
 
-class UpdatePost extends PostEvent {
-  final String postId;
-  final String? title;
-  final String? content;
-  final String? categoryId;
-  final List<String>? tags;
-
-  const UpdatePost({
-    required this.postId,
-    this.title,
-    this.content,
-    this.categoryId,
-    this.tags,
-  });
-
-  @override
-  List<Object?> get props => [postId, title, content, categoryId, tags];
-}
-
-class DeletePost extends PostEvent {
-  final String postId;
-
-  const DeletePost(this.postId);
-
-  @override
-  List<Object?> get props => [postId];
-}
-
+// class UpdatePost extends PostEvent {
+//   final String postId;
+//   final String? title;
+//   final String? content;
+//   final String? categoryId;
+//   final List<String>? tags;
+//
+//   const UpdatePost({
+//     required this.postId,
+//     this.title,
+//     this.content,
+//     this.categoryId,
+//     this.tags,
+//   });
+//
+//   @override
+//   List<Object?> get props => [postId, title, content, categoryId, tags];
+// }
+//
+// class DeletePost extends PostEvent {
+//   final String postId;
+//
+//   const DeletePost(this.postId);
+//
+//   @override
+//   List<Object?> get props => [postId];
+// }
+//
 class LikePost extends PostEvent {
   final String postId;
   final int currentLikes;

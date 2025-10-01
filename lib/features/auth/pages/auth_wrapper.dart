@@ -21,7 +21,7 @@ class AuthWrapper extends StatelessWidget {
               ),
             );
           case AuthAuthenticated():
-            return PostCreatePage();
+            // return PostCreatePage();
             return PostPage();
           case AuthUnauthenticated():
           case AuthError():

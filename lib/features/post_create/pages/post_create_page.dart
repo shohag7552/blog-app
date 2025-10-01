@@ -103,8 +103,10 @@ class _PostCreateViewState extends State<PostCreateView> {
             _contentController.clear();
             _locationController.clear();
             _tagController.clear();
-            // context.read<PostCreateBloc>().add(PostCreateReset());
+
+            Navigator.pop(context);
             customSnakeBar(context, "Post created successfully!");
+            // context.read<PostBloc>().add(LoadPosts(limit: 10, offset: 1));
           } else if (state.status == PostCreateStatus.failure) {
             customSnakeBar(context, state.errorMessage ?? "Failed to create post.", isSuccess: true);
           }
@@ -128,8 +130,8 @@ class _PostCreateViewState extends State<PostCreateView> {
               const SizedBox(height: 20),
 
               // Location Input
-              _buildLocationInput(),
-              const SizedBox(height: 20),
+              // _buildLocationInput(),
+              // const SizedBox(height: 20),
 
               // Tags Section
               _buildTagsSection(),

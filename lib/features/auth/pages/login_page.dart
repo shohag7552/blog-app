@@ -1,3 +1,4 @@
+import 'package:blog_project/core/widgets/custom_snakebar.dart';
 import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/pages/post_page.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +28,8 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            customSnakeBar(context, state.message, isSuccess: false);
+
           } else if (state is AuthAuthenticated) {
             // Navigate to the main app page or home page
             // Navigator.of(context).pushReplacementNamed('/posts');

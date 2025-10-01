@@ -63,11 +63,11 @@ class PostCreateBloc extends Bloc<PostCreateEvent, PostCreateState> {
     emit(state.copyWith(status: PostCreateStatus.submitting));
     try {
       final post = await postRepository.createPost(
-        title: event.post.title,
-        content: event.post.content,
+        title: event.post.title??'',
+        content: event.post.content??'',
         authorId: event.post.author?.userId ?? '',
         categoryId: event.post.category?.categoryId??'',
-        tags: event.post.tags,
+        tags: event.post.tags??[],
         images: event.post.image!,
       );
 

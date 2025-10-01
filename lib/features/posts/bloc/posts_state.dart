@@ -3,15 +3,19 @@ import 'package:blog_project/core/models/post_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class PostState extends Equatable {
-  const PostState();
+  final List<PostModel> posts;
+  final bool hasMore;
 
+  const PostState({this.posts = const [], this.hasMore = true});
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [posts, hasMore];
 }
 
 class PostInitial extends PostState {}
 
-class PostLoading extends PostState {}
+class PostLoading extends PostState {
+  const PostLoading({super.posts, super.hasMore});
+}
 
 class PostsLoaded extends PostState {
   final List<PostModel> posts;
@@ -39,32 +43,32 @@ class PostDetailLoaded extends PostState {
   List<Object?> get props => [post, comments];
 }
 
-class PostCreated extends PostState {
-  final PostModel post;
-
-  const PostCreated(this.post);
-
-  @override
-  List<Object?> get props => [post];
-}
-
-class PostUpdated extends PostState {
-  final PostModel post;
-
-  const PostUpdated(this.post);
-
-  @override
-  List<Object?> get props => [post];
-}
-
-class PostDeleted extends PostState {
-  final String postId;
-
-  const PostDeleted(this.postId);
-
-  @override
-  List<Object?> get props => [postId];
-}
+// class PostCreated extends PostState {
+//   final PostModel post;
+//
+//   const PostCreated(this.post);
+//
+//   @override
+//   List<Object?> get props => [post];
+// }
+//
+// class PostUpdated extends PostState {
+//   final PostModel post;
+//
+//   const PostUpdated(this.post);
+//
+//   @override
+//   List<Object?> get props => [post];
+// }
+//
+// class PostDeleted extends PostState {
+//   final String postId;
+//
+//   const PostDeleted(this.postId);
+//
+//   @override
+//   List<Object?> get props => [postId];
+// }
 
 class PostError extends PostState {
   final String message;

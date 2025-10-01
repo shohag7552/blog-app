@@ -8,6 +8,9 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   final PostRepository postRepository;
   final CommentRepository commentRepository;
 
+  int limit = 10;
+  int offset = 0;
+
   PostBloc({
     required this.postRepository,
     required this.commentRepository,
@@ -15,26 +18,37 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     on<LoadPosts>(_onLoadPosts);
     on<LoadPostDetail>(_onLoadPostDetail);
     // on<CreatePost>(_onCreatePost);
-    on<UpdatePost>(_onUpdatePost);
-    on<DeletePost>(_onDeletePost);
+    // on<UpdatePost>(_onUpdatePost);
+    // on<DeletePost>(_onDeletePost);
     on<LikePost>(_onLikePost);
   }
 
   Future<void> _onLoadPosts(LoadPosts event, Emitter<PostState> emit) async {
     try {
-      emit(PostLoading());
+      if (!event.loadMore) {
+        offset = 0;
+        emit(PostLoading());
+      }
 
-      final posts = await postRepository.getPosts(
-        limit: event.limit,
-        offset: event.offset,
+      final newPosts = await postRepository.getPosts(
+        limit: limit,
+        offset: offset,
         categoryId: event.categoryId,
         authorId: event.authorId,
       );
 
+      final allPosts = event.loadMore
+          ? [...state.posts, ...newPosts]
+          : newPosts;
+
+      offset += limit;
+
+      print('Loaded ${newPosts.length} posts, total: ${allPosts.length}, rich max: ${newPosts.length == limit}');
       emit(PostsLoaded(
-        posts: posts,
-        hasReachedMax: posts.length < event.limit,
+        posts: allPosts,
+        hasReachedMax: newPosts.length == limit,
       ));
+
     } catch (e) {
       emit(PostError(e.toString()));
     }
@@ -74,35 +88,35 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   //   }
   // }
 
-  Future<void> _onUpdatePost(UpdatePost event, Emitter<PostState> emit) async {
-    try {
-      emit(PostLoading());
-
-      final post = await postRepository.updatePost(
-        postId: event.postId,
-        title: event.title,
-        content: event.content,
-        categoryId: event.categoryId,
-        tags: event.tags,
-      );
-
-      emit(PostUpdated(post));
-    } catch (e) {
-      emit(PostError(e.toString()));
-    }
-  }
-
-  Future<void> _onDeletePost(DeletePost event, Emitter<PostState> emit) async {
-    try {
-      emit(PostLoading());
-
-      await postRepository.deletePost(event.postId);
-
-      emit(PostDeleted(event.postId));
-    } catch (e) {
-      emit(PostError(e.toString()));
-    }
-  }
+  // Future<void> _onUpdatePost(UpdatePost event, Emitter<PostState> emit) async {
+  //   try {
+  //     emit(PostLoading());
+  //
+  //     final post = await postRepository.updatePost(
+  //       postId: event.postId,
+  //       title: event.title,
+  //       content: event.content,
+  //       categoryId: event.categoryId,
+  //       tags: event.tags,
+  //     );
+  //
+  //     emit(PostUpdated(post));
+  //   } catch (e) {
+  //     emit(PostError(e.toString()));
+  //   }
+  // }
+  //
+  // Future<void> _onDeletePost(DeletePost event, Emitter<PostState> emit) async {
+  //   try {
+  //     emit(PostLoading());
+  //
+  //     await postRepository.deletePost(event.postId);
+  //
+  //     emit(PostDeleted(event.postId));
+  //   } catch (e) {
+  //     emit(PostError(e.toString()));
+  //   }
+  // }
 
   Future<void> _onLikePost(LikePost event, Emitter<PostState> emit) async {
     try {

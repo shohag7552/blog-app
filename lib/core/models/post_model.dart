@@ -6,16 +6,18 @@ import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PostModel extends Equatable {
-  final String postId;
-  final String title;
-  final String content;
+  final String? postId;
+  final String? title;
+  final String? content;
   final UserModel? author;
   final CategoryModel? category;
-  final List<String> tags;
-  final int likes;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final List<String>? tags;
+  final int? likes;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
   final List<XFile>? image;
+  final String? authorId;
+  final List<String>? photos;
 
   const PostModel({
     required this.postId,
@@ -28,6 +30,8 @@ class PostModel extends Equatable {
     required this.createdAt,
     required this.updatedAt,
     this.image,
+    this.authorId,
+    this.photos,
   });
 
   factory PostModel.fromMap(Map<String, dynamic> map) {
@@ -37,11 +41,13 @@ class PostModel extends Equatable {
       content: map['content'] ?? '',
       author: map['author'] != null ? UserModel.fromMap(map['author']) : null,
       category: map['category'] != null ? CategoryModel.fromMap(map['category']) : null,
-      tags: List<String>.from(map['tags'] ?? []),
+      tags: map['tags'] != null ? List<String>.from(map['tags'] ?? []) : null,
       likes: map['likes'] ?? 0,
       createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
       updatedAt: DateTime.parse(map['updatedAt'] ?? DateTime.now().toIso8601String()),
-      image: map['image'] != null ? [XFile(map['image'])] : null
+      image: map['image'] != null ? [XFile(map['image'])] : null,
+      authorId: map['author_id'] ?? '',
+      photos: map['photos'] != null ? List<String>.from(map['photos']) : null,
     );
   }
 
@@ -53,8 +59,8 @@ class PostModel extends Equatable {
       'category': category?.categoryId,
       'tags': tags,
       'likes': likes,
-      'createdAt': createdAt.toIso8601String(),
-      'updatedAt': updatedAt.toIso8601String(),
+      'createdAt': createdAt?.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
       'image': image?.map((img) => img.path).toList(),
     };
   }

@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:appwrite/appwrite.dart';
@@ -21,7 +20,7 @@ class PostRepository {
       List<String> queries = [
         Query.limit(limit),
         Query.offset(offset),
-        Query.orderDesc('createdAt'),
+        Query.orderDesc('\$createdAt'),
       ];
 
       if (categoryId != null) {
@@ -79,7 +78,6 @@ class PostRepository {
 
       User user = await _appwriteService.getCurrentUser();
 
-      final now = DateTime.now();
       final data = {
         'title': title,
         'content': content,
