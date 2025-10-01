@@ -2,18 +2,16 @@
 import 'dart:io';
 
 import 'package:blog_project/core/models/post_model.dart';
+import 'package:blog_project/core/widgets/custom_snakebar.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_bloc.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_event.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_state.dart';
-import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
-import 'package:blog_project/features/posts/bloc/posts_event.dart';
-import 'package:blog_project/features/posts/bloc/posts_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
 class PostCreatePage extends StatelessWidget {
-  const PostCreatePage({Key? key}) : super(key: key);
+  const PostCreatePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -101,14 +99,14 @@ class _PostCreateViewState extends State<PostCreateView> {
       body: BlocListener<PostCreateBloc, PostCreateState>(
         listener: (context, state) {
           if (state.status == PostCreateStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Post created successfully!")),
-            );
-            // Navigator.pop(context); // Go back after success
+            _titleController.clear();
+            _contentController.clear();
+            _locationController.clear();
+            _tagController.clear();
+            // context.read<PostCreateBloc>().add(PostCreateReset());
+            customSnakeBar(context, "Post created successfully!");
           } else if (state.status == PostCreateStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.errorMessage ?? "Failed to create post.")),
-            );
+            customSnakeBar(context, state.errorMessage ?? "Failed to create post.", isSuccess: true);
           }
         },
         child: SingleChildScrollView(
@@ -184,7 +182,7 @@ class _PostCreateViewState extends State<PostCreateView> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -352,7 +350,7 @@ class _PostCreateViewState extends State<PostCreateView> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -399,7 +397,7 @@ class _PostCreateViewState extends State<PostCreateView> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),

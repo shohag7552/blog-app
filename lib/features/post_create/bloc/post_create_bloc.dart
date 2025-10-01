@@ -72,7 +72,7 @@ class PostCreateBloc extends Bloc<PostCreateEvent, PostCreateState> {
       );
 
       // print('=====> Created Post: ${post.toMap()} =====');
-      emit(state.copyWith(status: PostCreateStatus.success));
+      emit(state.copyWith(status: PostCreateStatus.success, images: [], tags: []));
     } catch (e) {
       print('----------Error creating post: $e');
       emit(state.copyWith(
