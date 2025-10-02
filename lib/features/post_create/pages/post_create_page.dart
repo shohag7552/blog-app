@@ -1,14 +1,19 @@
 
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:blog_project/core/models/post_model.dart';
+import 'package:blog_project/core/widgets/circles.dart';
 import 'package:blog_project/core/widgets/custom_snakebar.dart';
+import 'package:blog_project/core/widgets/glass_container.dart';
+import 'package:blog_project/core/widgets/glass_text_field_container.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_bloc.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_event.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 class PostCreatePage extends StatelessWidget {
   const PostCreatePage({super.key});
@@ -33,6 +38,9 @@ class _PostCreateViewState extends State<PostCreateView> {
   final _tagController = TextEditingController();
   final _scrollController = ScrollController();
 
+  final FocusNode _titleFocusNode = FocusNode();
+  final FocusNode _contentFocusNode = FocusNode();
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -46,8 +54,184 @@ class _PostCreateViewState extends State<PostCreateView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
+      backgroundColor: const Color(0xFF18391E),
+      body: Stack(children: [
+        CirclesBackground(),
+
+        SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.fromLTRB(16, 150, 16, 16),
+          child: BlocListener<PostCreateBloc, PostCreateState>(
+            listener: (context, state) {
+              if (state.status == PostCreateStatus.success) {
+                _titleController.clear();
+                _contentController.clear();
+                _locationController.clear();
+                _tagController.clear();
+
+                Navigator.pop(context);
+                customSnakeBar(context, "Post created successfully!");
+                // context.read<PostBloc>().add(LoadPosts(limit: 10, offset: 1));
+              } else if (state.status == PostCreateStatus.failure) {
+                customSnakeBar(context, state.errorMessage ?? "Failed to create post.", isSuccess: true);
+              }
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title Input
+                _buildTitleInput(),
+                const SizedBox(height: 20),
+
+                // Content Input
+                _buildContentInput(),
+                const SizedBox(height: 20),
+
+                // Images Section
+                _buildImagesSection(),
+                const SizedBox(height: 20),
+
+                // Location Input
+                // _buildLocationInput(),
+                // const SizedBox(height: 20),
+
+                // Tags Section
+                _buildTagsSection(),
+                const SizedBox(height: 100), // Bottom padding for scrolling
+              ],
+            ),
+          ),
+        ),
+
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: 170,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF032343).withValues(alpha: 0),
+                  Color(0xFF032343),
+                ],
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+              ),
+            ),
+          ),
+        ),
+
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            child: Column(children: [
+              Row(children: [
+                LiquidGlass(
+                  // blur: 3,
+                  settings: LiquidGlassSettings(
+                    blur: 3,
+                    ambientStrength: 0.5,
+                    lightAngle: -0.2 * math.pi,
+                    glassColor: Colors.white12,
+                  ),
+                  shape: LiquidRoundedSuperellipse(
+                    borderRadius: const Radius.circular(40),
+                  ),
+                  glassContainsChild: false,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+
+                Text(
+                  'Create Post',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+
+                const Spacer(),
+
+                BlocBuilder<PostCreateBloc, PostCreateState>(
+                  builder: (context, state) {
+                    return LiquidGlass(
+                      settings: LiquidGlassSettings(
+                        blur: 3,
+                        ambientStrength: 0.5,
+                        lightAngle: -0.2 * math.pi,
+                        glassColor: Colors.white12,
+                      ),
+                      shape: LiquidRoundedSuperellipse(
+                        borderRadius: const Radius.circular(10),
+                      ),
+                      glassContainsChild: false,
+                      child: Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: InkWell(
+                          radius: 20,
+                          onTap: state.status == PostCreateStatus.submitting
+                              ? null
+                              : () {
+                            context.read<PostCreateBloc>().add(CreatePost(PostModel(
+                              postId: '',
+                              title: _titleController.text,
+                              content: _contentController.text,
+                              tags: state.tags,
+                              likes: 0,
+                              createdAt: DateTime.now(),
+                              updatedAt: DateTime.now(),
+                              image: state.images,
+                            )));
+
+                            },
+                          child: state.status == PostCreateStatus.submitting
+                              ? Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: const SizedBox(
+                                  width: 16, height: 16,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              )
+                              : Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
+                            child: Text(
+                              'Post',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+              ]),
+
+              const Spacer(),
+            ]),
+          ),
+        ),
+
+      ]),
+      /*appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
@@ -139,25 +323,17 @@ class _PostCreateViewState extends State<PostCreateView> {
             ],
           ),
         ),
-      ),
+      ),*/
     );
   }
 
   Widget _buildTitleInput() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+
+    return GlassTextFieldContainer(
       child: TextField(
         controller: _titleController,
+        focusNode: _titleFocusNode,
+        textInputAction: TextInputAction.next,
         maxLength: 100,
         decoration: const InputDecoration(
           hintText: 'Post title...',
@@ -169,6 +345,7 @@ class _PostCreateViewState extends State<PostCreateView> {
         style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
+          color: Colors.white,
         ),
         onChanged: (value) {
           // context.read<PostCreateBloc>().add(PostTitleChanged(value));
@@ -178,20 +355,10 @@ class _PostCreateViewState extends State<PostCreateView> {
   }
 
   Widget _buildContentInput() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+    return GlassTextFieldContainer(
       child: TextField(
         controller: _contentController,
+        focusNode: _contentFocusNode,
         maxLines: 8,
         maxLength: 1000,
         decoration: const InputDecoration(
@@ -200,10 +367,12 @@ class _PostCreateViewState extends State<PostCreateView> {
           border: InputBorder.none,
           contentPadding: EdgeInsets.all(16),
         ),
-        style: const TextStyle(fontSize: 16, height: 1.5),
-        onChanged: (value) {
-          // context.read<PostCreateBloc>().add(PostContentChanged(value));
-        },
+        style: const TextStyle(
+          fontSize: 16,
+          height: 1.5,
+          color: Colors.white,
+        ),
+        onChanged: (value) {},
       ),
     );
   }
@@ -221,7 +390,7 @@ class _PostCreateViewState extends State<PostCreateView> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Colors.white,
               ),
             ),
             const Spacer(),
@@ -233,21 +402,24 @@ class _PostCreateViewState extends State<PostCreateView> {
           // buildWhen: (previous, current) => previous != current,
           builder: (context, state) {
             if (state.images.isEmpty) {
-              return Container(
+              return SizedBox(
                 height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: const Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add_photo_alternate, size: 32, color: Colors.grey),
-                      SizedBox(height: 8),
-                      Text('Add photos to your post', style: TextStyle(color: Colors.grey)),
-                    ],
+                child: GlassContainer(
+                  // height: 120,
+                  // decoration: BoxDecoration(
+                  //   color: Colors.grey[100],
+                  //   borderRadius: BorderRadius.circular(12),
+                  //   border: Border.all(color: Colors.grey[300]!),
+                  // ),
+                  child: const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.add_photo_alternate, size: 32, color: Colors.grey),
+                        SizedBox(height: 8),
+                        Text('Add photos to your post', style: TextStyle(color: Colors.grey)),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -278,12 +450,12 @@ class _PostCreateViewState extends State<PostCreateView> {
                           right: 4,
                           child: GestureDetector(
                             onTap: () => context.read<PostCreateBloc>().add(PostImageRemoved(index)),
-                            child: Container(
+                            child: GlassContainer(
                               padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                              ),
+                              // decoration: const BoxDecoration(
+                              //   color: Colors.red,
+                              //   shape: BoxShape.circle,
+                              // ),
                               child: const Icon(
                                 Icons.close,
                                 color: Colors.white,
@@ -306,12 +478,8 @@ class _PostCreateViewState extends State<PostCreateView> {
 
   Widget _buildImagePickerButton() {
     return PopupMenuButton<bool>(
-      icon: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(8),
-        ),
+      color: Colors.white24,
+      icon: GlassContainer(
         child: const Icon(Icons.add, color: Colors.white, size: 20),
       ),
       itemBuilder: (context) => [
@@ -319,9 +487,9 @@ class _PostCreateViewState extends State<PostCreateView> {
           value: false,
           child: Row(
             children: [
-              Icon(Icons.photo_library),
+              Icon(Icons.photo_library, color: Colors.white),
               SizedBox(width: 8),
-              Text('Gallery'),
+              Text('Gallery', style: TextStyle(color: Colors.white)),
             ],
           ),
         ),
@@ -329,9 +497,9 @@ class _PostCreateViewState extends State<PostCreateView> {
           value: true,
           child: Row(
             children: [
-              Icon(Icons.camera_alt),
+              Icon(Icons.camera_alt, color: Colors.white),
               SizedBox(width: 8),
-              Text('Camera'),
+              Text('Camera', style: TextStyle(color: Colors.white)),
             ],
           ),
         ),
@@ -340,6 +508,8 @@ class _PostCreateViewState extends State<PostCreateView> {
         if(!fromCamera) {
           context.read<PostCreateBloc>().add(PostImagesPicked());
           return;
+        } else {
+          customSnakeBar(context, 'Camera not supported yet', isSuccess: false);
         }
       },
     );
@@ -387,24 +557,14 @@ class _PostCreateViewState extends State<PostCreateView> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.black87,
+                color: Colors.white,
               ),
             ),
           ],
         ),
         const SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
+
+        GlassTextFieldContainer(
           child: TextField(
             controller: _tagController,
             decoration: const InputDecoration(
@@ -413,6 +573,9 @@ class _PostCreateViewState extends State<PostCreateView> {
               border: InputBorder.none,
               contentPadding: EdgeInsets.all(16),
               prefixIcon: Icon(Icons.tag, color: Colors.grey),
+            ),
+            style: const TextStyle(
+              color: Colors.white,
             ),
             onSubmitted: (value) {
               if (value.trim().isNotEmpty) {
@@ -433,20 +596,15 @@ class _PostCreateViewState extends State<PostCreateView> {
               spacing: 8,
               runSpacing: 8,
               children: state.tags.map((tag) {
-                return Container(
+                return GlassContainer(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.blue[200]!),
-                  ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
                         '#$tag',
                         style: TextStyle(
-                          color: Colors.blue[700],
+                          color: Colors.blue,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -458,7 +616,7 @@ class _PostCreateViewState extends State<PostCreateView> {
                         child: Icon(
                           Icons.close,
                           size: 16,
-                          color: Colors.blue[700],
+                          color: Colors.blue,
                         ),
                       ),
                     ],
