@@ -126,104 +126,121 @@ class _PostCreateViewState extends State<PostCreateView> {
           child: Padding(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0),
             child: Column(children: [
-              Row(children: [
-                LiquidGlass(
-                  // blur: 3,
-                  settings: LiquidGlassSettings(
-                    blur: 3,
-                    ambientStrength: 0.5,
-                    lightAngle: -0.2 * math.pi,
-                    glassColor: Colors.white12,
-                  ),
-                  shape: LiquidRoundedSuperellipse(
-                    borderRadius: const Radius.circular(40),
-                  ),
-                  glassContainsChild: false,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 24,
+              GlassContainer(
+                child: Row(children: [
+                  LiquidGlass(
+                    // blur: 3,
+                    settings: LiquidGlassSettings(
+                      blur: 3,
+                      ambientStrength: 0.5,
+                      lightAngle: -0.2 * math.pi,
+                      glassColor: Colors.white12,
+                    ),
+                    shape: LiquidRoundedSuperellipse(
+                      borderRadius: const Radius.circular(40),
+                    ),
+                    glassContainsChild: false,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-
-                Text(
-                  'Create Post',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(width: 16),
+                
+                  Text(
+                    'Create Post',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-
-                const Spacer(),
-
-                BlocBuilder<PostCreateBloc, PostCreateState>(
-                  builder: (context, state) {
-                    return LiquidGlass(
-                      settings: LiquidGlassSettings(
-                        blur: 3,
-                        ambientStrength: 0.5,
-                        lightAngle: -0.2 * math.pi,
-                        glassColor: Colors.white12,
-                      ),
-                      shape: LiquidRoundedSuperellipse(
-                        borderRadius: const Radius.circular(10),
-                      ),
-                      glassContainsChild: false,
-                      child: Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: InkWell(
-                          radius: 20,
-                          onTap: state.status == PostCreateStatus.submitting
-                              ? null
-                              : () {
-                            context.read<PostCreateBloc>().add(CreatePost(PostModel(
-                              postId: '',
-                              title: _titleController.text,
-                              content: _contentController.text,
-                              tags: state.tags,
-                              likes: 0,
-                              createdAt: DateTime.now(),
-                              updatedAt: DateTime.now(),
-                              image: state.images,
-                            )));
-
-                            },
-                          child: state.status == PostCreateStatus.submitting
-                              ? Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: const SizedBox(
-                                  width: 16, height: 16,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
+                
+                  const Spacer(),
+                
+                  BlocBuilder<PostCreateBloc, PostCreateState>(
+                    builder: (context, state) {
+                      return LiquidGlass(
+                        settings: LiquidGlassSettings(
+                          blur: 3,
+                          ambientStrength: 0.5,
+                          lightAngle: -0.2 * math.pi,
+                          glassColor: Colors.white12,
+                        ),
+                        shape: LiquidRoundedSuperellipse(
+                          borderRadius: const Radius.circular(10),
+                        ),
+                        glassContainsChild: false,
+                        child: Padding(
+                          padding: const EdgeInsets.all(0.0),
+                          child: InkWell(
+                            radius: 20,
+                            onTap: state.status == PostCreateStatus.submitting
+                                ? null
+                                : () {
+                                  
+                                  if(_titleController.text.trim().isEmpty) {
+                                    customSnakeBar(context, 'Please enter a title for the post.', isSuccess: false);
+                                    _titleFocusNode.requestFocus();
+                                    return;
+                                  }
+                                  if(_contentController.text.trim().isEmpty) {
+                                    customSnakeBar(context, 'Please enter content for the post.', isSuccess: false);
+                                    _contentFocusNode.requestFocus();
+                                    return;
+                                  }
+                                  if(state.images.isEmpty) {
+                                    customSnakeBar(context, 'Please add at least one image.', isSuccess: false);
+                                    return;
+                                  }
+                              context.read<PostCreateBloc>().add(CreatePost(PostModel(
+                                postId: '',
+                                title: _titleController.text,
+                                content: _contentController.text,
+                                tags: state.tags,
+                                likes: 0,
+                                createdAt: DateTime.now(),
+                                updatedAt: DateTime.now(),
+                                image: state.images,
+                              )));
+                
+                              },
+                            child: state.status == PostCreateStatus.submitting
+                                ? Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: const SizedBox(
+                                    width: 16, height: 16,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  ),
+                                )
+                                : Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
+                              child: Text(
+                                'Post',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              )
-                              : Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
-                            child: Text(
-                              'Post',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-
-              ]),
+                      );
+                    },
+                  ),
+                
+                ]),
+              ),
 
               const Spacer(),
             ]),

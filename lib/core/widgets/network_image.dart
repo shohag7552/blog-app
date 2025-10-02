@@ -1,4 +1,20 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+class CustomNetworkImage extends StatelessWidget {
+  final String imageUrl;
+  const CustomNetworkImage({super.key, required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    return CachedNetworkImage(
+       imageUrl: imageUrl, fit: BoxFit.cover, width: double.infinity,
+       progressIndicatorBuilder: (context, url, downloadProgress) => 
+               Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+       errorWidget: (context, url, error) => Container(color: Colors.black38, child: Center(child: Icon(Icons.error, size: 34, color: Colors.grey[200],))),
+    );
+  }
+}
 
 Widget networkImage({required String imageUrl}) {
   return Image.network(

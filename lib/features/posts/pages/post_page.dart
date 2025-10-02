@@ -88,14 +88,14 @@ class _PostPageState extends State<PostPage> {
                     bottom: 16,
                   ),
                   itemBuilder: (context, index) {
-                    // if (index == state.posts.length) {
-                    //   // show loader at bottom and fetch next page
-                    //   context.read<PostBloc>().add(LoadPosts(loadMore: true));
-                    //   return const Center(child: Padding(
-                    //     padding: EdgeInsets.all(16.0),
-                    //     child: CircularProgressIndicator(),
-                    //   ));
-                    // }
+                    if (index == state.posts.length) {
+                      // show loader at bottom and fetch next page
+                      // context.read<PostBloc>().add(LoadPosts(loadMore: true));
+                      return const Center(child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: CircularProgressIndicator(),
+                      ));
+                    }
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: ClipRRect(
@@ -105,7 +105,7 @@ class _PostPageState extends State<PostPage> {
                           children: [
                             AspectRatio(
                               aspectRatio: 1,
-                              child: networkImage(imageUrl: state.posts[index].photos != null && state.posts[index].photos!.isNotEmpty ? state.posts[index].photos?.first??'' : ''),
+                              child: CustomNetworkImage(imageUrl: state.posts[index].photos != null && state.posts[index].photos!.isNotEmpty ? state.posts[index].photos?.first??'' : ''),
                             ),
                             ClipRRect(
                               borderRadius: BorderRadius.only(
@@ -374,7 +374,7 @@ class _PostPageState extends State<PostPage> {
                       const Spacer(),
                       Padding(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
+                          horizontal: 8, vertical: 16
                         ),
                         child: LiquidGlassLayer(
                           settings: LiquidGlassSettings(
