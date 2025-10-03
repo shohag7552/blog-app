@@ -7,6 +7,7 @@ import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_state.dart';
+import 'package:blog_project/features/posts/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
@@ -23,6 +24,8 @@ class _PostPageState extends State<PostPage> {
   final ScrollController _scrollController = ScrollController();
 
   double _tabSpacing = 0.0;
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -65,7 +68,9 @@ class _PostPageState extends State<PostPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       backgroundColor: const Color(0xFF18391E),
+      endDrawer: DrawerWidget(),
       body: BlocBuilder<PostBloc, PostState>(
         builder: (context, state) {
           if(state is PostLoading && state.posts.isEmpty) {
@@ -308,12 +313,17 @@ class _PostPageState extends State<PostPage> {
                               borderRadius: const Radius.circular(40),
                             ),
                             glassContainsChild: false,
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Icon(
-                                Icons.notifications_outlined,
-                                color: Colors.white,
-                                size: 24,
+                            child: InkWell(
+                              onTap: () {
+                                _scaffoldKey.currentState!.openEndDrawer();
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Icon(
+                                  Icons.menu,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
                               ),
                             ),
                           ),
