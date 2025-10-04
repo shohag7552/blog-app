@@ -81,15 +81,15 @@ class LoadPostDetail extends PostEvent {
 //   List<Object?> get props => [postId, title, content, categoryId, tags];
 // }
 //
-// class DeletePost extends PostEvent {
-//   final String postId;
-//
-//   const DeletePost(this.postId);
-//
-//   @override
-//   List<Object?> get props => [postId];
-// }
-//
+class DeletePost extends PostEvent {
+  final String postId;
+
+  const DeletePost(this.postId);
+
+  @override
+  List<Object?> get props => [postId];
+}
+
 class LikePost extends PostEvent {
   final String postId;
   final int currentLikes;

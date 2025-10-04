@@ -19,7 +19,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     on<LoadPostDetail>(_onLoadPostDetail);
     // on<CreatePost>(_onCreatePost);
     // on<UpdatePost>(_onUpdatePost);
-    // on<DeletePost>(_onDeletePost);
+    on<DeletePost>(_onDeletePost);
     on<LikePost>(_onLikePost);
   }
 
@@ -106,17 +106,17 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   //   }
   // }
   //
-  // Future<void> _onDeletePost(DeletePost event, Emitter<PostState> emit) async {
-  //   try {
-  //     emit(PostLoading());
-  //
-  //     await postRepository.deletePost(event.postId);
-  //
-  //     emit(PostDeleted(event.postId));
-  //   } catch (e) {
-  //     emit(PostError(e.toString()));
-  //   }
-  // }
+  Future<void> _onDeletePost(DeletePost event, Emitter<PostState> emit) async {
+    try {
+      emit(PostLoading());
+
+      await postRepository.deletePost(event.postId);
+
+      emit(PostDeleted(event.postId));
+    } catch (e) {
+      emit(PostError(e.toString()));
+    }
+  }
 
   Future<void> _onLikePost(LikePost event, Emitter<PostState> emit) async {
     try {

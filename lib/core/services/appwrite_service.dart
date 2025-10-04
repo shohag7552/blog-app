@@ -117,11 +117,22 @@ class AppwriteService {
     required String collectionId,
     required String documentId,
   }) async {
-    return await databases.deleteRow(
-      databaseId: AppwriteConfig.databaseId,
-      tableId: collectionId,
-      rowId: documentId,
-    );
+    try {
+      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $collectionId, rowId: $documentId');
+
+      return await databases.deleteRow(
+        databaseId: AppwriteConfig.databaseId,
+        tableId: collectionId,
+        rowId: documentId,
+      );
+
+    } on AppwriteException catch (e) {
+      log('===> AppWriteException: ${e.code} ${e.message} ${e.response}');
+      rethrow;
+    } catch (e) {
+      log('Upload error: $e');
+      rethrow;
+    }
   }
 
   /// Authentication

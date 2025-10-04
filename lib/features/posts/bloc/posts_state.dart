@@ -60,15 +60,15 @@ class PostDetailLoaded extends PostState {
 //   @override
 //   List<Object?> get props => [post];
 // }
-//
-// class PostDeleted extends PostState {
-//   final String postId;
-//
-//   const PostDeleted(this.postId);
-//
-//   @override
-//   List<Object?> get props => [postId];
-// }
+
+class PostDeleted extends PostState {
+  final String postId;
+
+  const PostDeleted(this.postId);
+
+  @override
+  List<Object?> get props => [postId];
+}
 
 class PostError extends PostState {
   final String message;

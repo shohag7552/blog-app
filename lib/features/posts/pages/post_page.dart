@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:blog_project/core/widgets/custom_snakebar.dart';
 import 'package:blog_project/core/widgets/network_image.dart';
 import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
@@ -79,6 +80,12 @@ class _PostPageState extends State<PostPage> {
           else if(state is PostError && state.posts.isEmpty) {
             return Center(child: Text('Error: ${state.message}'));
           }
+          else if (state is PostDeleted) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              customSnakeBar(context, 'Post deleted successfully', isSuccess: true);
+              context.read<PostBloc>().add(LoadPosts());
+            });
+          }
           else if (state.posts.isEmpty) {
             return const Center(child: Text("No posts yet"));
           }
@@ -93,14 +100,14 @@ class _PostPageState extends State<PostPage> {
                     bottom: 16,
                   ),
                   itemBuilder: (context, index) {
-                    if (index == state.posts.length) {
-                      // show loader at bottom and fetch next page
-                      // context.read<PostBloc>().add(LoadPosts(loadMore: true));
-                      return const Center(child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: CircularProgressIndicator(),
-                      ));
-                    }
+                    // if (index +1 == state.posts.length) {
+                    //   // show loader at bottom and fetch next page
+                    //   // context.read<PostBloc>().add(LoadPosts(loadMore: true));
+                    //   return const Center(child: Padding(
+                    //     padding: EdgeInsets.all(16.0),
+                    //     child: CircularProgressIndicator(),
+                    //   ));
+                    // }
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: ClipRRect(
@@ -181,37 +188,45 @@ class _PostPageState extends State<PostPage> {
                                               ),
                                             ),
                                             const SizedBox(width: 8),
-                                            // Icon(
-                                            //   Icons.bathroom_outlined,
-                                            //   color: Colors.white,
-                                            //   size: 14,
-                                            // ),
-                                            // const SizedBox(width: 4),
-                                            // Text(
-                                            //   '${sampleHomes[index]
-                                            //       .numberOfBathrooms} Baths',
-                                            //   style: TextStyle(
-                                            //     color: Colors.white,
-                                            //     fontSize: 12,
-                                            //   ),
-                                            // ),
-                                            // Spacer(),
-                                            // Text(
-                                            //   '\$ ${sampleHomes[index]
-                                            //       .pricePerNight.toStringAsFixed(
-                                            //       2)}/night',
-                                            //   style: TextStyle(
-                                            //     color: Colors.white,
-                                            //     fontSize: 16,
-                                            //     fontWeight: FontWeight.w600,
-                                            //   ),
-                                            // ),
                                           ],
                                         ),
                                       ],
                                     ),
                                   ),
                                 ),
+                              ),
+                            ),
+
+                            Positioned(
+                              top: 10, right: 10,
+                              child: IconButton(
+                                onPressed: (){
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        // backgroundColor: Colors.transparent,
+                                        title: Text("Delete Post"),
+                                        content: Text("Are you sure you want to delete this post? This action cannot be undone.",),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              context.read<PostBloc>().add(DeletePost(state.posts[index].postId!));
+                                            },
+                                            child: Text("Delete", style: TextStyle(color: Colors.red),),
+                                          ),
+
+                                          TextButton(
+                                            onPressed: () => Navigator.pop(context),
+                                            child: Text("Close"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: Icon(Icons.delete_forever, color: Colors.white, size: 28),
                               ),
                             ),
                           ],
@@ -225,7 +240,7 @@ class _PostPageState extends State<PostPage> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  height: 240,
+                  height: 200,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [

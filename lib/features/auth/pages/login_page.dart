@@ -175,10 +175,9 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 16),
                         TextButton(
                           onPressed: () {
-                            context.read<AuthBloc>().add(AuthLogoutRequested());
-                            // setState(() {
-                            //   _isLoginMode = !_isLoginMode;
-                            // });
+                            setState(() {
+                              _isLoginMode = !_isLoginMode;
+                            });
                           },
                           child: Text(_isLoginMode
                               ? 'Don\'t have an account? Register'

@@ -58,8 +58,6 @@ class AuthRepository {
         'email': user.email,
         'isActive': false,
         'hashedPassword': user.hashedPassword??'#',
-        // 'createdAt': now.toIso8601String(),
-        // 'updatedAt': now.toIso8601String(),
       };
 
       // 1. Check if user already exists
@@ -84,7 +82,6 @@ class AuthRepository {
         );
       }
 
-      // return UserModel(userId: user.userId, name: user.name, email: user.email, hashedPassword: user.hashedPassword, createdAt: user.createdAt);
       return true;
     } catch (e) {
       log('==> Error uploading user: $e');
