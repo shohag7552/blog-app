@@ -31,7 +31,7 @@ class PostRepository {
         queries.add(Query.equal('author', authorId));
       }
 
-      final response = await _appwriteService.listDocuments(
+      final response = await _appwriteService.listTable(
         collectionId: AppwriteConfig.postsCollection,
         queries: queries,
       );
@@ -121,7 +121,7 @@ class PostRepository {
       if (categoryId != null) data['category'] = categoryId;
       if (tags != null) data['tags'] = tags;
 
-      final response = await _appwriteService.updateDocument(
+      final response = await _appwriteService.updateTable(
         collectionId: AppwriteConfig.postsCollection,
         documentId: postId,
         data: data,
@@ -146,7 +146,7 @@ class PostRepository {
 
   Future<void> likePost(String postId, int currentLikes) async {
     try {
-      await _appwriteService.updateDocument(
+      await _appwriteService.updateTable(
         collectionId: AppwriteConfig.postsCollection,
         documentId: postId,
         data: {'likes': currentLikes + 1},

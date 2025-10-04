@@ -8,6 +8,7 @@ class UserModel extends Equatable {
   final String? bio;
   final String? avatarUrl;
   final String createdAt;
+  final String? hashedPassword;
 
   const UserModel({
     required this.userId,
@@ -16,6 +17,7 @@ class UserModel extends Equatable {
     this.bio,
     this.avatarUrl,
     required this.createdAt,
+    this.hashedPassword,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
@@ -26,6 +28,7 @@ class UserModel extends Equatable {
       bio: map['bio'],
       avatarUrl: map['avatarUrl'],
       createdAt: map['createdAt'],
+      hashedPassword: map['hashed_password'],
     );
   }
 

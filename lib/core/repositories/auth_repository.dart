@@ -1,5 +1,9 @@
+import 'dart:developer';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:appwrite/models.dart' as models;
+import 'package:appwrite/models.dart';
+import 'package:blog_project/core/configuratio/appwrite_config.dart';
 import 'package:blog_project/core/services/appwrite_service.dart';
 import '../di/service_locator.dart';
 import '../models/user_model.dart';
@@ -10,7 +14,7 @@ class AuthRepository {
   Future<UserModel?> getCurrentUser() async {
     try {
       final user = await _appwriteService.getCurrentUser();
-      return UserModel(userId: user.$id, name: user.name, email: user.email, createdAt: user.$createdAt);
+      return UserModel(userId: user.$id, name: user.name, email: user.email, hashedPassword: user.password, createdAt: user.$createdAt);
     } on AppwriteException catch (e) {
       if (e.code == 401) {
         return null;
@@ -42,6 +46,49 @@ class AuthRepository {
 
     } on AppwriteException {
       rethrow;
+    }
+  }
+
+  Future<bool> uploadUser({required UserModel user}) async {
+    try {
+
+      final data = {
+        'userId': user.userId,
+        'username': user.name,
+        'email': user.email,
+        'isActive': false,
+        'hashedPassword': user.hashedPassword??'#',
+        // 'createdAt': now.toIso8601String(),
+        // 'updatedAt': now.toIso8601String(),
+      };
+
+      // 1. Check if user already exists
+      final result = await _appwriteService.listTable(
+        collectionId: AppwriteConfig.usersCollection,
+        queries: [Query.equal('userId', user.userId)],
+      );
+      print('===> User exists check: ${result.total}');
+
+      if (result.rows.isNotEmpty) {
+        /// User exists → Update
+        final docId = result.rows.first.$id;
+        await _appwriteService.updateTable(
+          collectionId: AppwriteConfig.usersCollection,
+          documentId: docId,
+          data: data,
+        );
+      } else {
+        /// User doesn’t exist → Create
+        await _appwriteService.createDocument(
+          collectionId: AppwriteConfig.usersCollection, data: data,
+        );
+      }
+
+      // return UserModel(userId: user.userId, name: user.name, email: user.email, hashedPassword: user.hashedPassword, createdAt: user.createdAt);
+      return true;
+    } catch (e) {
+      log('==> Error uploading user: $e');
+      throw Exception('Failed to uploading user: $e');
     }
   }
 

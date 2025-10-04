@@ -8,7 +8,7 @@ class CommentRepository {
 
   Future<List<CommentModel>> getCommentsByPost(String postId) async {
     try {
-      final response = await _appwriteService.listDocuments(
+      final response = await _appwriteService.listTable(
         collectionId: AppwriteConfig.commentsCollection,
         queries: [
           Query.equal('post', postId),

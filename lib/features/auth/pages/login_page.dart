@@ -175,9 +175,10 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 16),
                         TextButton(
                           onPressed: () {
-                            setState(() {
-                              _isLoginMode = !_isLoginMode;
-                            });
+                            context.read<AuthBloc>().add(AuthLogoutRequested());
+                            // setState(() {
+                            //   _isLoginMode = !_isLoginMode;
+                            // });
                           },
                           child: Text(_isLoginMode
                               ? 'Don\'t have an account? Register'
@@ -198,17 +199,17 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _submitForm() {
-    if(!_isLoginMode && _nameController.text.isEmpty) {
-      FocusScope.of(context).requestFocus(_nameNode);
-      customSnakeBar(context, 'Name is required', isSuccess: false);
-      return;
-    } else if( _emailController.text.isEmpty) {
+    if( _emailController.text.isEmpty) {
       FocusScope.of(context).requestFocus(_emailNode);
       customSnakeBar(context, 'Email is required', isSuccess: false);
       return;
     } else if( _passwordController.text.isEmpty) {
       FocusScope.of(context).requestFocus(_passwordNode);
       customSnakeBar(context, 'Password is required', isSuccess: false);
+      return;
+    } else if(!_isLoginMode && _nameController.text.isEmpty) {
+      FocusScope.of(context).requestFocus(_nameNode);
+      customSnakeBar(context, 'Name is required', isSuccess: false);
       return;
     } else {
       if (_isLoginMode) {

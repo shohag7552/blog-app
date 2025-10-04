@@ -59,15 +59,17 @@ class AppwriteService {
   Future<Row> getDocument({
     required String collectionId,
     required String documentId,
+    List<String>? queries,
   }) async {
     return await databases.getRow(
       databaseId: AppwriteConfig.databaseId,
       tableId: collectionId,
       rowId: documentId,
+      queries: queries,
     );
   }
 
-  Future<RowList> listDocuments({required String collectionId, List<String>? queries}) async {
+  Future<RowList> listTable({required String collectionId, List<String>? queries}) async {
     try {
       log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $collectionId, with queries: $queries');
 
@@ -86,17 +88,29 @@ class AppwriteService {
     }
   }
 
-  Future<Row> updateDocument({
+  Future<Row> updateTable({
     required String collectionId,
     required String documentId,
     required Map<String, dynamic> data,
   }) async {
-    return await databases.updateRow(
-      databaseId: AppwriteConfig.databaseId,
-      tableId: collectionId,
-      rowId: documentId,
-      data: data,
-    );
+    try {
+      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $collectionId, documentId: $documentId with data: $data');
+
+      return await databases.updateRow(
+        databaseId: AppwriteConfig.databaseId,
+        tableId: collectionId,
+        rowId: documentId,
+        data: data,
+      );
+
+    } on AppwriteException catch (e) {
+      log('===> AppWriteException: ${e.code} ${e.message} ${e.response}');
+      rethrow;
+    } catch (e) {
+      log('Upload error: $e');
+      rethrow;
+    }
+
   }
 
   Future<void> deleteDocument({

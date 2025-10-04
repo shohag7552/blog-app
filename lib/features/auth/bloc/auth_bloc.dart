@@ -51,6 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       print('====user: $user');
       if(user != null) {
+        await _authRepository.uploadUser(user: user);
         emit(AuthAuthenticated(user));
       } else {
         emit(const AuthError('Failed to login'));
