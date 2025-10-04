@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:blog_project/core/widgets/circles.dart';
 import 'package:blog_project/core/widgets/custom_snakebar.dart';
+import 'package:blog_project/core/widgets/glass_text.dart';
 import 'package:blog_project/core/widgets/glass_text_field_container.dart';
 import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/pages/post_page.dart';
@@ -52,11 +53,15 @@ class _LoginPageState extends State<LoginPage> {
                   context,
                   MaterialPageRoute(builder: (_) => const PostPage()),
                 );
-              }
+              } /*else if (state is AuthUnauthenticated) {
+                // Stay on the login page
+                customSnakeBar(context, 'You have been logged out', isSuccess: false);
+              }*/
             },
             child: BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
 
+                print('==== Auth State: $state');
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Form(
@@ -65,122 +70,96 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
 
-                        Text(_isLoginMode ? 'Login' : 'Register',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
+                        GlassText(
+                          text: _isLoginMode ? 'Login' : 'Register',
+                          style: TextStyle(
+                            fontSize: 50,
                             fontWeight: FontWeight.bold,
+                            color: Colors.white, // The color here is only for the shape
                           ),
                         ),
                         const SizedBox(height: 50),
 
-                        TextFormField(
-                          controller: _emailController,
-                          focusNode: _emailNode,
-                          textInputAction: TextInputAction.next,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).requestFocus(_passwordNode);
-                          },
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            labelStyle: TextStyle(color: Colors.white),
-
-                          ),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) {
-                              return 'Please enter your email';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 24),
-
-                        TextFormField(
-                          controller: _passwordController,
-                          focusNode: _passwordNode,
-                          textInputAction: _isLoginMode ? TextInputAction.done : TextInputAction.next,
-                          onFieldSubmitted: (_) {
-                            FocusScope.of(context).requestFocus(_nameNode);
-                          },
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.white),
-                            ),
-                            labelStyle: TextStyle(color: Colors.white),
-
-                          ),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                          obscureText: true,
-                          validator: (value) {
-                            if (value?.isEmpty ?? true) {
-                              return 'Please enter your password';
-                            }
-                            if (value!.length < 8) {
-                              return 'Password must be at least 8 characters';
-                            }
-                            return null;
-                          },
-                        ),
-                        if (!_isLoginMode) ...[
-                          const SizedBox(height: 24),
-                          TextFormField(
-                            controller: _nameController,
-                            focusNode: _nameNode,
-                            textInputAction: TextInputAction.done,
+                        GlassTextFieldContainer(
+                          child: TextField(
+                            controller: _emailController,
+                            focusNode: _emailNode,
+                            textInputAction: TextInputAction.next,
+                            onSubmitted: (_) {
+                              FocusScope.of(context).requestFocus(_passwordNode);
+                            },
+                            maxLength: 100,
                             decoration: const InputDecoration(
-                              labelText: 'Name',
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                              ),
-
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.white),
-                              ),
-                              labelStyle: TextStyle(color: Colors.white),
-
+                              hintText: 'Email',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.all(16),
+                              counterText: '',
                             ),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
                             ),
-                            validator: (value) {
-                              if (value?.isEmpty ?? true) {
-                                return 'Please enter your name';
-                              }
-                              return null;
+                            onChanged: (value) {
+                              // context.read<PostCreateBloc>().add(PostTitleChanged(value));
                             },
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        GlassTextFieldContainer(
+                          child: TextField(
+                            controller: _passwordController,
+                            focusNode: _passwordNode,
+                            textInputAction: _isLoginMode ? TextInputAction.done : TextInputAction.next,
+                            onSubmitted: (_) {
+                              FocusScope.of(context).requestFocus(_nameNode);
+                            },
+                            maxLength: 100,
+                            decoration: const InputDecoration(
+                              hintText: 'Password',
+                              hintStyle: TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.all(16),
+                              counterText: '',
+                            ),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                            obscureText: true,
+                            onChanged: (value) {
+                              // context.read<PostCreateBloc>().add(PostTitleChanged(value));
+                            },
+                          ),
+                        ),
+
+                        if (!_isLoginMode) ...[
+                          const SizedBox(height: 24),
+                          GlassTextFieldContainer(
+                            child: TextField(
+                              controller: _nameController,
+                              focusNode: _nameNode,
+                              textInputAction: TextInputAction.done,
+                              maxLength: 100,
+                              decoration: const InputDecoration(
+                                hintText: 'Name',
+                                hintStyle: TextStyle(color: Colors.grey),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.all(16),
+                                counterText: '',
+                              ),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                              onChanged: (value) {
+                                // context.read<PostCreateBloc>().add(PostTitleChanged(value));
+                              },
+                            ),
                           ),
                         ],
                         const SizedBox(height: 24),
@@ -219,24 +198,37 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _submitForm() {
-    if (_formKey.currentState?.validate() ?? false) {
+    if(!_isLoginMode && _nameController.text.isEmpty) {
+      FocusScope.of(context).requestFocus(_nameNode);
+      customSnakeBar(context, 'Name is required', isSuccess: false);
+      return;
+    } else if( _emailController.text.isEmpty) {
+      FocusScope.of(context).requestFocus(_emailNode);
+      customSnakeBar(context, 'Email is required', isSuccess: false);
+      return;
+    } else if( _passwordController.text.isEmpty) {
+      FocusScope.of(context).requestFocus(_passwordNode);
+      customSnakeBar(context, 'Password is required', isSuccess: false);
+      return;
+    } else {
       if (_isLoginMode) {
         context.read<AuthBloc>().add(
-              AuthLoginRequested(
-                email: _emailController.text,
-                password: _passwordController.text,
-              ),
-            );
+          AuthLoginRequested(
+            email: _emailController.text,
+            password: _passwordController.text,
+          ),
+        );
       } else {
         context.read<AuthBloc>().add(
-              AuthRegisterRequested(
-                email: _emailController.text,
-                password: _passwordController.text,
-                name: _nameController.text,
-              ),
-            );
+          AuthRegisterRequested(
+            email: _emailController.text,
+            password: _passwordController.text,
+            name: _nameController.text,
+          ),
+        );
       }
     }
+
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:blog_project/core/repositories/comment_repository.dart';
 import 'package:blog_project/core/repositories/post_repository.dart';
 import 'package:blog_project/features/auth/bloc/auth_bloc.dart';
 import 'package:blog_project/features/auth/pages/auth_wrapper.dart';
+import 'package:blog_project/features/auth/pages/login_page.dart';
 import 'package:blog_project/features/comments/bloc/comment_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
@@ -55,10 +56,11 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Appwrite Blog',
           theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            primaryColor: Colors.yellow,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
             useMaterial3: true,
           ),
-          home: const AuthWrapper(),
+          home: const LoginPage(),
         ),
       ),
     );

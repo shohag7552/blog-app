@@ -52,6 +52,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       print('====user: $user');
       if(user != null) {
         emit(AuthAuthenticated(user));
+      } else {
+        emit(const AuthError('Failed to login'));
       }
     } on AppwriteException catch (e) {
       emit(AuthError(_getErrorMessage(e)));
