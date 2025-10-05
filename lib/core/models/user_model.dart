@@ -2,6 +2,7 @@
 import 'package:equatable/equatable.dart';
 
 class UserModel extends Equatable {
+  final String id;
   final String userId;
   final String name;
   final String email;
@@ -11,6 +12,7 @@ class UserModel extends Equatable {
   final String? hashedPassword;
 
   const UserModel({
+    this.id = '',
     required this.userId,
     required this.name,
     required this.email,
@@ -22,7 +24,8 @@ class UserModel extends Equatable {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      userId: map['\$id'] ?? '',
+      id: map['\$id'] ?? '',
+      userId: map['userId'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       bio: map['bio'],

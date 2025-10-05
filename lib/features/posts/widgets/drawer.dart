@@ -6,6 +6,7 @@ import 'package:blog_project/features/auth/pages/login_page.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_bloc.dart';
 import 'package:blog_project/features/post_create/bloc/post_create_event.dart';
 import 'package:blog_project/features/post_create/pages/post_create_page.dart';
+import 'package:blog_project/features/profile/pages/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
@@ -75,6 +76,18 @@ class DrawerWidget extends StatelessWidget {
               title: Text('Home', style: TextStyle(color: Colors.white),),
               onTap: () {
                 Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.person_2_rounded, color: Colors.white),
+              title: Text('Profile', style: TextStyle(color: Colors.white),),
+              onTap: () {
+                Navigator.pop(context);
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()),
+                );
               },
             ),
             ListTile(

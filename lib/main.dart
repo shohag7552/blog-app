@@ -7,6 +7,7 @@ import 'package:blog_project/features/auth/pages/login_page.dart';
 import 'package:blog_project/features/comments/bloc/comment_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
+import 'package:blog_project/features/profile/bloc/profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -52,6 +53,9 @@ class MyApp extends StatelessWidget {
               commentRepository: context.read<CommentRepository>(),
             ),
           ),
+          BlocProvider(
+            create: (context) => ProfileBloc(authRepository: context.read<AuthRepository>()),
+          ),
         ],
         child: MaterialApp(
           title: 'Appwrite Blog',
@@ -60,7 +64,7 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
             useMaterial3: true,
           ),
-          home: const LoginPage(),
+          home: const AuthWrapper(),
         ),
       ),
     );

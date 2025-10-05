@@ -60,19 +60,21 @@ class AuthRepository {
         'hashedPassword': user.hashedPassword??'#',
       };
 
-      // 1. Check if user already exists
-      final result = await _appwriteService.listTable(
-        collectionId: AppwriteConfig.usersCollection,
-        queries: [Query.equal('userId', user.userId)],
-      );
-      print('===> User exists check: ${result.total}');
+      // // 1. Check if user already exists
+      // final result = await _appwriteService.listTable(
+      //   collectionId: AppwriteConfig.usersCollection,
+      //   queries: [Query.equal('userId', user.userId)],
+      // );
+      // print('===> User exists check: ${result.total}');
 
-      if (result.rows.isNotEmpty) {
+      UserModel? existingUser = await getUserById(user.userId);
+
+      if (existingUser != null) {
         /// User exists → Update
-        final docId = result.rows.first.$id;
+        // final docId = result.rows.first.$id;
         await _appwriteService.updateTable(
           collectionId: AppwriteConfig.usersCollection,
-          documentId: docId,
+          documentId: existingUser.id,
           data: data,
         );
       } else {
@@ -86,6 +88,35 @@ class AuthRepository {
     } catch (e) {
       log('==> Error uploading user: $e');
       throw Exception('Failed to uploading user: $e');
+    }
+  }
+
+  Future<UserModel?> getUserById(String userId) async {
+    try {
+      log('==> Fetching user by ID: $userId');
+
+      final result = await _appwriteService.listTable(
+        collectionId: AppwriteConfig.usersCollection,
+        queries: [Query.equal('userId', userId)],
+      );
+
+      if (result.total > 0) {
+        final doc = result.rows.first;
+        print('===> Fetched user : ${doc.data}');
+        return UserModel(
+          id: doc.$id,
+          userId: doc.data['userId'],
+          name: doc.data['username'],
+          email: doc.data['email'],
+          hashedPassword: doc.data['hashedPassword'],
+          createdAt: doc.$createdAt,
+        );
+      } else {
+        return null;
+      }
+    } catch (e) {
+      log('==> Error getting user by ID: $e');
+      throw Exception('Failed to get user by ID: $e');
     }
   }
 

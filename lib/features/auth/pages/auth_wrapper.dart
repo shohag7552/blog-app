@@ -13,7 +13,28 @@ class AuthWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        switch (state) {
+        if (state is AuthInitial) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        } else if (state is AuthAuthenticated) {
+          return PostPage();
+        } else if (state is AuthUnauthenticated || state is AuthError) {
+          if (state is AuthError) {
+            customSnakeBar(context, state.message, isSuccess: false);
+          }
+          return const LoginPage();
+        } else {
+          return const Scaffold(
+            backgroundColor: Color(0xFF18391E),
+            body: Center(
+              child: Text('Unknown state'),
+            ),
+          );
+        }
+        /*switch (state) {
           case AuthInitial():
           case AuthLoading():
             return const Scaffold(
@@ -28,7 +49,7 @@ class AuthWrapper extends StatelessWidget {
           case AuthError():
             // customSnakeBar(context, (state as AuthError).message, isSuccess: false);
             return const LoginPage();
-        }
+        }*/
       },
     );
   }
