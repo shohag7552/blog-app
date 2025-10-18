@@ -9,7 +9,7 @@ class CommentRepository {
   Future<List<CommentModel>> getCommentsByPost(String postId) async {
     try {
       final response = await _appwriteService.listTable(
-        collectionId: AppwriteConfig.commentsCollection,
+        tableId: AppwriteConfig.commentsCollection,
         queries: [
           Query.equal('post', postId),
           Query.orderDesc('createdAt'),
@@ -35,7 +35,7 @@ class CommentRepository {
         'createdAt': DateTime.now().toIso8601String(),
       };
 
-      final response = await _appwriteService.createDocument(
+      final response = await _appwriteService.createRow(
         collectionId: AppwriteConfig.commentsCollection,
         data: data,
       );
@@ -48,9 +48,9 @@ class CommentRepository {
 
   Future<void> deleteComment(String commentId) async {
     try {
-      await _appwriteService.deleteDocument(
+      await _appwriteService.deleteRow(
         collectionId: AppwriteConfig.commentsCollection,
-        documentId: commentId,
+        rowId: commentId,
       );
     } catch (e) {
       throw Exception('Failed to delete comment: $e');

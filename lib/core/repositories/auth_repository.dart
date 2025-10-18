@@ -79,7 +79,7 @@ class AuthRepository {
         );
       } else {
         /// User doesn’t exist → Create
-        await _appwriteService.createDocument(
+        await _appwriteService.createRow(
           collectionId: AppwriteConfig.usersCollection, data: data,
         );
       }
@@ -96,7 +96,7 @@ class AuthRepository {
       log('==> Fetching user by ID: $userId');
 
       final result = await _appwriteService.listTable(
-        collectionId: AppwriteConfig.usersCollection,
+        tableId: AppwriteConfig.usersCollection,
         queries: [Query.equal('userId', userId)],
       );
 

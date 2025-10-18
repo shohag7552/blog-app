@@ -32,11 +32,37 @@ class PostRepository {
       }
 
       final response = await _appwriteService.listTable(
-        collectionId: AppwriteConfig.postsCollection,
+        tableId: AppwriteConfig.postsCollection,
         queries: queries,
       );
 
-      return response.rows.map((doc) => PostModel.fromMap(doc.data)).toList();
+      /// Likes fetching
+      final userId = await _getUserId();
+      final likesRes = await _appwriteService.listTable(
+        tableId: AppwriteConfig.likes,
+        queries: [
+          Query.equal('user', userId),
+        ],
+      );
+      final likedPostIds = likesRes.rows.map((doc) => doc.data['post']).toList();
+
+      log('====> Fetched ${response.total} posts with ${likedPostIds} liked posts for user: $userId');
+
+      final postsWithLikes = response.rows.map((post) {
+        final isLiked = likedPostIds.contains(post.$id);
+        print('===================1111==========> Post ID: ${post.$id}, isLiked: $isLiked');
+        final data = {
+          'id': post.$id,
+          'title': post.data['title'],
+          'content': post.data['content'],
+          'liked': isLiked ? 1 : 0,
+          ...post.data,
+        };
+        print('===================2222==========> $data');
+        return data;
+      }).toList();
+      return postsWithLikes.map((data) => PostModel.fromMap(data)).toList();
+      // return response.rows.map((doc) => PostModel.fromMap(doc.data)).toList();
     } catch (e) {
       throw Exception('Failed to fetch posts: $e');
     }
@@ -92,7 +118,7 @@ class PostRepository {
 
       print('=====type: ${data['tags'].runtimeType}, value: ${data['tags']} =====');
 
-      final response = await _appwriteService.createDocument(
+      final response = await _appwriteService.createRow(
         collectionId: AppwriteConfig.postsCollection, data: data,
       );
 
@@ -135,24 +161,103 @@ class PostRepository {
 
   Future<void> deletePost(String postId) async {
     try {
-      await _appwriteService.deleteDocument(
+      await _appwriteService.deleteRow(
         collectionId: AppwriteConfig.postsCollection,
-        documentId: postId,
+        rowId: postId,
       );
     } catch (e) {
       throw Exception('Failed to delete post: $e');
     }
   }
 
-  Future<void> likePost(String postId, int currentLikes) async {
-    try {
-      await _appwriteService.updateTable(
-        collectionId: AppwriteConfig.postsCollection,
-        documentId: postId,
-        data: {'likes': currentLikes + 1},
+  // Future<void> likePost(String postId, int currentLikes) async {
+  //   try {
+  //     await _appwriteService.updateTable(
+  //       collectionId: AppwriteConfig.postsCollection,
+  //       documentId: postId,
+  //       data: {'likes': currentLikes + 1},
+  //     );
+  //   } catch (e) {
+  //     throw Exception('Failed to like post: $e');
+  //   }
+  //
+  // }
+
+  Future<String> _getUserId() async {
+    final currentUser = await _appwriteService.getCurrentUser();
+
+    final user = await _appwriteService.listTable(
+      tableId: AppwriteConfig.usersCollection,
+      queries: [
+        Query.equal('userId', currentUser.$id),
+      ],
+    );
+    log('====> Fetched user rows count: ${user.total}');
+    final userDocId =  user.rows.isNotEmpty ? user.rows.first.$id : '';
+    return userDocId;
+  }
+
+  Future<void> toggleLike(String postId) async {
+
+    // 1️⃣ Find current user doc
+
+    final userDocId = await _getUserId();
+    log('====> Current user doc ID: $userDocId');
+
+    // 2️⃣ Check if this user already liked the post
+    final existingLikes = await _appwriteService.listTable(
+      tableId: AppwriteConfig.likes,
+      queries: [
+        Query.equal('user', userDocId),
+        Query.equal('post', postId),
+      ],
+    );
+
+    log('====> Existing likes count: ${existingLikes.total}');
+
+    if (existingLikes.rows.isNotEmpty) {
+      // Unlike → delete the like document
+
+      await _appwriteService.deleteRow(
+        collectionId: AppwriteConfig.likes,
+        rowId: existingLikes.rows.first.$id,
       );
-    } catch (e) {
-      throw Exception('Failed to like post: $e');
+
+      log("====> Unliked post");
+    } else {
+      // Like → create new like document
+      await _appwriteService.createRow(
+          collectionId: AppwriteConfig.likes,
+          data: {
+            'user': userDocId,
+            'post': postId,
+          });
+
+      log("====> Liked post : $postId , by user: $userDocId");
     }
+  }
+
+  Future<int> getLikeCount(String postId) async {
+    final likes = _appwriteService.listTable(
+      tableId: AppwriteConfig.likes,
+      queries: [Query.equal('post', postId)],
+    );
+    return likes.then((value) => value.total);
+  }
+
+  Future<bool> isPostLikedByUser(String postId) async {
+
+    final user = await _appwriteService.getCurrentUser();
+    final userDocId = user.$id;
+
+    final existing = await _appwriteService.listTable(
+      tableId: AppwriteConfig.likes,
+      queries: [
+        Query.equal('user', userDocId),
+        Query.equal('post', postId),
+      ],
+    );
+
+    return existing.rows.isNotEmpty;
   }
 }

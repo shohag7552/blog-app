@@ -26,7 +26,7 @@ class AppwriteService {
   }
 
   // Database operations
-  Future<Row> createDocument({
+  Future<Row> createRow({
     required String collectionId,
     required Map<String, dynamic> data,
     String? documentId,
@@ -49,7 +49,7 @@ class AppwriteService {
         ],
       );
     } on AppwriteException catch (e) {
-      log('===> AppwriteException: ${e.code} ${e.message} ${e.response}');
+      log('===> AppwriteException: ${e.response}');
       rethrow;
     } catch (e) {
       throw Exception('Failed to create post: $e');
@@ -69,13 +69,13 @@ class AppwriteService {
     );
   }
 
-  Future<RowList> listTable({required String collectionId, List<String>? queries}) async {
+  Future<RowList> listTable({required String tableId, List<String>? queries}) async {
     try {
-      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $collectionId, with queries: $queries');
+      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $tableId, with queries: $queries');
 
       return await databases.listRows(
         databaseId: AppwriteConfig.databaseId,
-        tableId: collectionId,
+        tableId: tableId,
         queries: queries ?? [],
       );
 
@@ -113,17 +113,17 @@ class AppwriteService {
 
   }
 
-  Future<void> deleteDocument({
+  Future<void> deleteRow({
     required String collectionId,
-    required String documentId,
+    required String rowId,
   }) async {
     try {
-      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $collectionId, rowId: $documentId');
+      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $collectionId, rowId: $rowId');
 
       return await databases.deleteRow(
         databaseId: AppwriteConfig.databaseId,
         tableId: collectionId,
-        rowId: documentId,
+        rowId: rowId,
       );
 
     } on AppwriteException catch (e) {

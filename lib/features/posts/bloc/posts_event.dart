@@ -92,13 +92,13 @@ class DeletePost extends PostEvent {
 
 class LikePost extends PostEvent {
   final String postId;
-  final int currentLikes;
+  // final int currentLikes;
 
   const LikePost({
     required this.postId,
-    required this.currentLikes,
+    // required this.currentLikes,
   });
 
   @override
-  List<Object?> get props => [postId, currentLikes];
+  List<Object?> get props => [postId/*, currentLikes*/];
 }

@@ -120,7 +120,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
 
   Future<void> _onLikePost(LikePost event, Emitter<PostState> emit) async {
     try {
-      await postRepository.likePost(event.postId, event.currentLikes);
+      await postRepository.toggleLike(event.postId);
 
       // Reload the current state
       if (state is PostDetailLoaded) {

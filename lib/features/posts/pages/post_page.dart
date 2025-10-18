@@ -100,6 +100,8 @@ class _PostPageState extends State<PostPage> {
                     bottom: 16,
                   ),
                   itemBuilder: (context, index) {
+
+                    print('======index is $index =======> ${state.posts[index].likes}');
                     // if (index +1 == state.posts.length) {
                     //   // show loader at bottom and fetch next page
                     //   // context.read<PostBloc>().add(LoadPosts(loadMore: true));
@@ -144,10 +146,15 @@ class _PostPageState extends State<PostPage> {
                                                 fontWeight: FontWeight.w600,
                                               ),
                                             ),
-                                            Icon(
-                                              Icons.favorite_border_rounded,
-                                              color: Colors.white,
-                                              size: 24,
+                                            InkWell(
+                                              onTap: () {
+                                                context.read<PostBloc>().add(LikePost(postId: state.posts[index].postId!));
+                                              },
+                                              child: Icon(
+                                                state.posts[index].likes == 1 ? Icons.favorite_outlined : Icons.favorite_border_rounded,
+                                                color: Colors.white,
+                                                size: 24,
+                                              ),
                                             ),
                                           ],
                                         ),
