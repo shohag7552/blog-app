@@ -101,15 +101,6 @@ class _PostPageState extends State<PostPage> {
                   ),
                   itemBuilder: (context, index) {
 
-                    print('======index is $index =======> ${state.posts[index].likes}');
-                    // if (index +1 == state.posts.length) {
-                    //   // show loader at bottom and fetch next page
-                    //   // context.read<PostBloc>().add(LoadPosts(loadMore: true));
-                    //   return const Center(child: Padding(
-                    //     padding: EdgeInsets.all(16.0),
-                    //     child: CircularProgressIndicator(),
-                    //   ));
-                    // }
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16.0),
                       child: ClipRRect(
@@ -148,6 +139,7 @@ class _PostPageState extends State<PostPage> {
                                             ),
                                             InkWell(
                                               onTap: () {
+                                                print('Like post: ${state.posts[index].postId}');
                                                 context.read<PostBloc>().add(LikePost(postId: state.posts[index].postId!));
                                               },
                                               child: Icon(

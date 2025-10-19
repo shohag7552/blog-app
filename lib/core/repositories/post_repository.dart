@@ -46,23 +46,22 @@ class PostRepository {
       );
       final likedPostIds = likesRes.rows.map((doc) => doc.data['post']).toList();
 
-      log('====> Fetched ${response.total} posts with ${likedPostIds} liked posts for user: $userId');
-
       final postsWithLikes = response.rows.map((post) {
         final isLiked = likedPostIds.contains(post.$id);
-        print('===================1111==========> Post ID: ${post.$id}, isLiked: $isLiked');
         final data = {
           'id': post.$id,
           'title': post.data['title'],
           'content': post.data['content'],
-          'liked': isLiked ? 1 : 0,
-          ...post.data,
+          'likes': isLiked ? 1 : 0,
+          'author_id': post.data['author_id'],
+          'photos': post.data['photos'],
+          'category_id': post.data['category_id'],
+          'tags': post.data['tags'],
         };
-        print('===================2222==========> $data');
         return data;
       }).toList();
+
       return postsWithLikes.map((data) => PostModel.fromMap(data)).toList();
-      // return response.rows.map((doc) => PostModel.fromMap(doc.data)).toList();
     } catch (e) {
       throw Exception('Failed to fetch posts: $e');
     }

@@ -36,7 +36,7 @@ class PostModel extends Equatable {
 
   factory PostModel.fromMap(Map<String, dynamic> map) {
     return PostModel(
-      postId: map['\$id'] ?? '',
+      postId: map['\$id'] ?? map['id']??'',
       title: map['title'] ?? '',
       content: map['content'] ?? '',
       author: map['author'] != null ? UserModel.fromMap(map['author']) : null,
