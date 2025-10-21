@@ -225,7 +225,7 @@ class PostRepository {
         rowId: existingLikes.rows.first.$id,
       );
       post = post.copyWith(likes: 0);
-      log("====> Unliked post");
+      log("====> Unliked post____post: ${post}");
       // await updatePost(postId: postId, like: 0);
     } else {
       // Like → create new like document
@@ -241,7 +241,7 @@ class PostRepository {
       // await updatePost(postId: postId, like: 1);
     }
 
-    return await getPostById(postId);
+    return post;
   }
 
   Future<int> getLikeCount(String postId) async {

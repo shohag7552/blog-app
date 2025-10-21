@@ -134,11 +134,11 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     // }
     // Ensure we are operating on a loaded state. If we are in detail view, the existing logic is fine.
     if (state is! PostsLoaded) {
-      if (state is PostDetailLoaded) {
+      // if (state is PostDetailLoaded) {
         // Keep the existing logic for the detail page, which refreshes the detail view.
         await postRepository.toggleLike(event.postId);
         add(LoadPostDetail(event.postId));
-      }
+      // }
       // If not loaded, or in a different state, just exit gracefully.
       return;
     }

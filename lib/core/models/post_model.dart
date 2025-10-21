@@ -36,18 +36,21 @@ class PostModel extends Equatable {
 
   PostModel copyWith({
     String? postId,
-    String? title,
-    String? content,
     int? likes,
   }) {
     return PostModel(
       postId: postId ?? this.postId,
-      title: title ?? this.title,
+      title: title,
       likes: likes ?? this.likes,
       content: content,
+      author: author,
+      category: category,
       tags: tags,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      image: image,
+      authorId: authorId,
+      photos: photos,
     );
   }
 
