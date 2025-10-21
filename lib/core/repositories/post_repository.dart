@@ -37,31 +37,32 @@ class PostRepository {
       );
 
       /// Likes fetching
-      final userId = await _getUserId();
-      final likesRes = await _appwriteService.listTable(
-        tableId: AppwriteConfig.likes,
-        queries: [
-          Query.equal('user', userId),
-        ],
-      );
-      final likedPostIds = likesRes.rows.map((doc) => doc.data['post']).toList();
+      // final userId = await _getUserId();
+      // final likesRes = await _appwriteService.listTable(
+      //   tableId: AppwriteConfig.likes,
+      //   queries: [
+      //     Query.equal('user', userId),
+      //   ],
+      // );
+      // final likedPostIds = likesRes.rows.map((doc) => doc.data['post']).toList();
 
-      final postsWithLikes = response.rows.map((post) {
-        final isLiked = likedPostIds.contains(post.$id);
-        final data = {
-          'id': post.$id,
-          'title': post.data['title'],
-          'content': post.data['content'],
-          'likes': isLiked ? 1 : 0,
-          'author_id': post.data['author_id'],
-          'photos': post.data['photos'],
-          'category_id': post.data['category_id'],
-          'tags': post.data['tags'],
-        };
-        return data;
-      }).toList();
+      // final postsWithLikes = response.rows.map((post) {
+      //   final isLiked = likedPostIds.contains(post.$id);
+      //   final data = {
+      //     'id': post.$id,
+      //     'title': post.data['title'],
+      //     'content': post.data['content'],
+      //     'likes': isLiked ? 1 : 0,
+      //     'author_id': post.data['author_id'],
+      //     'photos': post.data['photos'],
+      //     'category_id': post.data['category_id'],
+      //     'tags': post.data['tags'],
+      //   };
+      //   return data;
+      // }).toList();
 
-      return postsWithLikes.map((data) => PostModel.fromMap(data)).toList();
+      // return postsWithLikes.map((data) => PostModel.fromMap(data)).toList();
+      return response.rows.map((post) => PostModel.fromMap(post.data)).toList();
     } catch (e) {
       throw Exception('Failed to fetch posts: $e');
     }

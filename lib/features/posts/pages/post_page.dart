@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:blog_project/core/widgets/custom_snakebar.dart';
 import 'package:blog_project/core/widgets/network_image.dart';
+import 'package:blog_project/features/favourite/pages/favourite_page.dart';
 import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
@@ -462,12 +463,20 @@ class _PostPageState extends State<PostPage> {
                                           ),
                                         ),
                                         const SizedBox(width: 4),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Icon(
-                                            Icons.favorite_border_rounded,
-                                            color: Colors.white,
-                                            size: 24,
+                                        InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => FavouritePage()),
+                                            );
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Icon(
+                                              Icons.favorite_border_rounded,
+                                              color: Colors.white,
+                                              size: 24,
+                                            ),
                                           ),
                                         ),
                                       ],
