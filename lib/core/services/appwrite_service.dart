@@ -89,17 +89,17 @@ class AppwriteService {
   }
 
   Future<Row> updateTable({
-    required String collectionId,
-    required String documentId,
+    required String tableId,
+    required String rowId,
     required Map<String, dynamic> data,
   }) async {
     try {
-      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $collectionId, documentId: $documentId with data: $data');
+      log('====> listDocuments in database: ${AppwriteConfig.databaseId}, tableId: $tableId, rowId: $rowId with data: $data');
 
       return await databases.updateRow(
         databaseId: AppwriteConfig.databaseId,
-        tableId: collectionId,
-        rowId: documentId,
+        tableId: tableId,
+        rowId: rowId,
         data: data,
       );
 

@@ -34,6 +34,23 @@ class PostModel extends Equatable {
     this.photos,
   });
 
+  PostModel copyWith({
+    String? postId,
+    String? title,
+    String? content,
+    int? likes,
+  }) {
+    return PostModel(
+      postId: postId ?? this.postId,
+      title: title ?? this.title,
+      likes: likes ?? this.likes,
+      content: content,
+      tags: tags,
+      createdAt: createdAt,
+      updatedAt: updatedAt,
+    );
+  }
+
   factory PostModel.fromMap(Map<String, dynamic> map) {
     return PostModel(
       postId: map['\$id'] ?? map['id']??'',

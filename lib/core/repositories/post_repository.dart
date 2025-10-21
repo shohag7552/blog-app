@@ -133,22 +133,24 @@ class PostRepository {
     required String postId,
     String? title,
     String? content,
+    int? like,
     String? categoryId,
     List<String>? tags,
   }) async {
     try {
       Map<String, dynamic> data = {
-        'updatedAt': DateTime.now().toIso8601String(),
+        '\$updatedAt': DateTime.now().toIso8601String(),
       };
 
       if (title != null) data['title'] = title;
       if (content != null) data['content'] = content;
       if (categoryId != null) data['category'] = categoryId;
       if (tags != null) data['tags'] = tags;
+      if (like != null) data['likes'] = like;
 
       final response = await _appwriteService.updateTable(
-        collectionId: AppwriteConfig.postsCollection,
-        documentId: postId,
+        tableId: AppwriteConfig.postsCollection,
+        rowId: postId,
         data: data,
       );
 
@@ -196,7 +198,7 @@ class PostRepository {
     return userDocId;
   }
 
-  Future<void> toggleLike(String postId) async {
+  Future<PostModel> toggleLike(String postId) async {
 
     // 1️⃣ Find current user doc
 
@@ -213,6 +215,7 @@ class PostRepository {
     );
 
     log('====> Existing likes count: ${existingLikes.total}');
+    PostModel post = await getPostById(postId);
 
     if (existingLikes.rows.isNotEmpty) {
       // Unlike → delete the like document
@@ -221,8 +224,9 @@ class PostRepository {
         collectionId: AppwriteConfig.likes,
         rowId: existingLikes.rows.first.$id,
       );
-
+      post = post.copyWith(likes: 0);
       log("====> Unliked post");
+      // await updatePost(postId: postId, like: 0);
     } else {
       // Like → create new like document
       await _appwriteService.createRow(
@@ -232,8 +236,12 @@ class PostRepository {
             'post': postId,
           });
 
-      log("====> Liked post : $postId , by user: $userDocId");
+      post = post.copyWith(likes: 1);
+      log("====> Liked post : $postId , by user: $userDocId // post: ${post}");
+      // await updatePost(postId: postId, like: 1);
     }
+
+    return await getPostById(postId);
   }
 
   Future<int> getLikeCount(String postId) async {

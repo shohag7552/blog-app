@@ -73,8 +73,8 @@ class AuthRepository {
         /// User exists → Update
         // final docId = result.rows.first.$id;
         await _appwriteService.updateTable(
-          collectionId: AppwriteConfig.usersCollection,
-          documentId: existingUser.id,
+          tableId: AppwriteConfig.usersCollection,
+          rowId: existingUser.id,
           data: data,
         );
       } else {

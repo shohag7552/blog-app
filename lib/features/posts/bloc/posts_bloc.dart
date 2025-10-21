@@ -1,3 +1,4 @@
+import 'package:blog_project/core/models/post_model.dart';
 import 'package:blog_project/core/repositories/comment_repository.dart';
 import 'package:blog_project/core/repositories/post_repository.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
@@ -119,16 +120,65 @@ class PostBloc extends Bloc<PostEvent, PostState> {
   }
 
   Future<void> _onLikePost(LikePost event, Emitter<PostState> emit) async {
-    try {
-      await postRepository.toggleLike(event.postId);
-
-      // Reload the current state
+    // try {
+    //   await postRepository.toggleLike(event.postId);
+    //
+    //   // Reload the current state
+    //   if (state is PostDetailLoaded) {
+    //     add(LoadPostDetail(event.postId));
+    //   } else {
+    //     add(const LoadPosts());
+    //   }
+    // } catch (e) {
+    //   emit(PostError(e.toString()));
+    // }
+    // Ensure we are operating on a loaded state. If we are in detail view, the existing logic is fine.
+    if (state is! PostsLoaded) {
       if (state is PostDetailLoaded) {
+        // Keep the existing logic for the detail page, which refreshes the detail view.
+        await postRepository.toggleLike(event.postId);
         add(LoadPostDetail(event.postId));
-      } else {
-        add(const LoadPosts());
       }
+      // If not loaded, or in a different state, just exit gracefully.
+      return;
+    }
+
+    // Cast the state to PostsLoaded to access the list
+    final currentState = state as PostsLoaded;
+
+    // Optimistically update the UI while the async operation runs (optional but good UX)
+    // For simplicity, we will update the state AFTER the successful repository call.
+
+    try {
+      // 1. Call the repository to toggle the like and get the updated counts/status.
+      // Assuming toggleLike returns the updated Post object, or at least a signal of success.
+      // If your repository only returns success/failure, you'll need to calculate the new values.
+      // For this example, let's assume it returns the new favorite status (boolean) and count (int).
+
+      // NOTE: This repository call needs to return the updated post data (new like count).
+      // Let's assume the repository has a method that returns the *updated post*.
+      final updatedPost = await postRepository.toggleLike(event.postId);
+
+      // 2. Locate the index of the post to be replaced
+      final postIndex = currentState.posts.indexWhere((p) => p.postId == event.postId);
+
+      if (postIndex != -1) {
+        // 3. Create a mutable copy of the current list of posts
+        final List<PostModel> updatedPosts = List.from(currentState.posts);
+
+        // 4. Replace the old post object with the newly fetched/updated post object
+        updatedPosts[postIndex] = updatedPost;
+
+        // 5. Emit a NEW PostsLoaded state with the updated list
+        emit(PostsLoaded(
+          posts: updatedPosts,
+          hasReachedMax: currentState.hasReachedMax,
+        ));
+      }
+
     } catch (e) {
+      // Re-emit the last successful state, and perhaps show an error snackbar via BlocListener
+      // emit(PostError(e.toString(), posts: currentState.posts));
       emit(PostError(e.toString()));
     }
   }
