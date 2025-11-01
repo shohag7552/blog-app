@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
         RepositoryProvider(create: (context) => AuthRepository()),
         RepositoryProvider(create: (context) => PostRepository()),
         RepositoryProvider(create: (context) => CommentRepository()),
+        RepositoryProvider(create: (context) => FavouriteRepository()),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -54,7 +55,7 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (context) => FavouriteBloc(
               favouriteRepository: context.read<FavouriteRepository>(),
-            ),
+            )/*..add(const LoadFavouritePosts())*/,
           ),
           BlocProvider(
             create: (context) => CommentBloc(

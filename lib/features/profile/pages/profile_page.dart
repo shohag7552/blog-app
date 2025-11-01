@@ -157,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: Column(children: [
               GlassContainer(
                 child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  LiquidGlass(
+                  LiquidGlass.withOwnLayer(
                     // blur: 3,
                     settings: LiquidGlassSettings(
                       blur: 3,
@@ -166,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       glassColor: Colors.white12,
                     ),
                     shape: LiquidRoundedSuperellipse(
-                      borderRadius: const Radius.circular(40),
+                      borderRadius: 40,
                     ),
                     glassContainsChild: false,
                     child: InkWell(

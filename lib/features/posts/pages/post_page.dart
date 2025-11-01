@@ -1,9 +1,8 @@
 import 'dart:developer';
 import 'dart:math' as math;
-import 'dart:ui';
 
 import 'package:blog_project/core/widgets/custom_snakebar.dart';
-import 'package:blog_project/core/widgets/network_image.dart';
+import 'package:blog_project/core/widgets/post_card.dart';
 import 'package:blog_project/features/favourite/pages/favourite_page.dart';
 import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
@@ -13,6 +12,7 @@ import 'package:blog_project/features/posts/widgets/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
+
 class PostPage extends StatefulWidget {
   const PostPage({super.key});
 
@@ -101,138 +101,7 @@ class _PostPageState extends State<PostPage> {
                     bottom: 16,
                   ),
                   itemBuilder: (context, index) {
-
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(36),
-                        child: Stack(
-                          alignment: Alignment.bottomCenter,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 1,
-                              child: CustomNetworkImage(imageUrl: state.posts[index].photos != null && state.posts[index].photos!.isNotEmpty ? state.posts[index].photos?.first??'' : ''),
-                            ),
-                            ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(36),
-                                bottomRight: Radius.circular(36),
-                              ),
-                              child: BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                                child: Container(
-                                  color: Colors.black.withValues(alpha: 0.3),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              state.posts[index].title??'',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                            InkWell(
-                                              onTap: () {
-                                                print('Like post: ${state.posts[index].postId}');
-                                                context.read<PostBloc>().add(LikePost(postId: state.posts[index].postId!));
-                                              },
-                                              child: Icon(
-                                                state.posts[index].likes == 1 ? Icons.favorite_outlined : Icons.favorite_border_rounded,
-                                                color: Colors.white,
-                                                size: 24,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            // Icon(
-                                            //   Icons.location_on_outlined,
-                                            //   color: Colors.white60,
-                                            //   size: 14,
-                                            // ),
-                                            // const SizedBox(width: 4),
-                                            Flexible(
-                                              child: Text(
-                                                state.posts[index].content??'',
-                                                maxLines: 2,
-                                                style: TextStyle(
-                                                  color: Colors.white60,
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.tag,
-                                              color: Colors.white,
-                                              size: 14,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              state.posts[index].tags?.join(', ')??'',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                            const SizedBox(width: 8),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                            Positioned(
-                              top: 10, right: 10,
-                              child: IconButton(
-                                onPressed: (){
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return AlertDialog(
-                                        // backgroundColor: Colors.transparent,
-                                        title: Text("Delete Post"),
-                                        content: Text("Are you sure you want to delete this post? This action cannot be undone.",),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                              context.read<PostBloc>().add(DeletePost(state.posts[index].postId!));
-                                            },
-                                            child: Text("Delete", style: TextStyle(color: Colors.red),),
-                                          ),
-
-                                          TextButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            child: Text("Close"),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(Icons.delete_forever, color: Colors.white, size: 28),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    return PostCard(postModel: state.posts[index]);
                   }),
 
               Positioned(
@@ -260,7 +129,7 @@ class _PostPageState extends State<PostPage> {
                     children: [
                       Row(
                         children: [
-                          LiquidGlass(
+                          LiquidGlass.withOwnLayer(
                             settings: LiquidGlassSettings(
                               blur: 3,
                               ambientStrength: 0.5,
@@ -268,7 +137,7 @@ class _PostPageState extends State<PostPage> {
                               glassColor: Colors.white12,
                             ),
                             shape: LiquidRoundedSuperellipse(
-                              borderRadius: const Radius.circular(40),
+                              borderRadius: 40,
                             ),
                             glassContainsChild: false,
                             child: Padding(
@@ -316,7 +185,7 @@ class _PostPageState extends State<PostPage> {
                             ],
                           ),
                           const Spacer(),
-                          LiquidGlass(
+                          LiquidGlass.withOwnLayer(
                             // blur: 3,
                             settings: LiquidGlassSettings(
                               blur: 3,
@@ -325,7 +194,7 @@ class _PostPageState extends State<PostPage> {
                               glassColor: Colors.white12,
                             ),
                             shape: LiquidRoundedSuperellipse(
-                              borderRadius: const Radius.circular(40),
+                              borderRadius: 40,
                             ),
                             glassContainsChild: false,
                             child: InkWell(
@@ -352,7 +221,7 @@ class _PostPageState extends State<PostPage> {
                         child: Row(
                           children: [
                             Expanded(
-                              child: LiquidGlass(
+                              child: LiquidGlass.withOwnLayer(
                                 settings: LiquidGlassSettings(
                                   ambientStrength: 2,
                                   lightAngle: 0.4 * math.pi,
@@ -361,7 +230,7 @@ class _PostPageState extends State<PostPage> {
                                   blur: 4,
                                 ),
                                 shape: LiquidRoundedSuperellipse(
-                                  borderRadius: const Radius.circular(40),
+                                  borderRadius: 40,
                                 ),
                                 glassContainsChild: false,
                                 child: Padding(
@@ -414,16 +283,16 @@ class _PostPageState extends State<PostPage> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                LiquidGlass.inLayer(
+                                LiquidGlass.withOwnLayer(
                                   shape: LiquidRoundedSuperellipse(
-                                    borderRadius: const Radius.circular(40),
+                                    borderRadius: 40,
                                   ),
                                   glassContainsChild: false,
                                   child: Padding(
                                     padding: const EdgeInsets.all(4.0),
                                     child: Row(
                                       children: [
-                                        LiquidGlass(
+                                        LiquidGlass.withOwnLayer(
                                           settings: LiquidGlassSettings(
                                             ambientStrength: 0.5,
                                             lightAngle: 0.2 * math.pi,
@@ -432,8 +301,7 @@ class _PostPageState extends State<PostPage> {
                                             blur: 8,
                                           ),
                                           shape: LiquidRoundedSuperellipse(
-                                            borderRadius:
-                                            const Radius.circular(40),
+                                            borderRadius: 40,
                                           ),
                                           glassContainsChild: false,
                                           child: InkWell(
@@ -493,10 +361,10 @@ class _PostPageState extends State<PostPage> {
                                   ),
                                 ),
 
-                                LiquidGlass.inLayer(
+                                LiquidGlass.withOwnLayer(
                                   // blur: 3,
                                   shape: LiquidRoundedSuperellipse(
-                                    borderRadius: const Radius.circular(40),
+                                    borderRadius:40,
                                   ),
                                   glassContainsChild: false,
                                   child: InkWell(

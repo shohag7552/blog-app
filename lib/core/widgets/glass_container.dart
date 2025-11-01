@@ -9,7 +9,7 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LiquidGlass(
+    return LiquidGlassLayer(
       // blur: 3,
       settings: LiquidGlassSettings(
         blur: 3,
@@ -17,13 +17,18 @@ class GlassContainer extends StatelessWidget {
         lightAngle: -0.2 * math.pi,
         glassColor: Colors.white12,
       ),
-      shape: LiquidRoundedSuperellipse(
-        borderRadius: const Radius.circular(10),
-      ),
-      glassContainsChild: false,
-      child: Padding(
-        padding: padding ?? const EdgeInsets.all(8.0),
-        child: child,
+      // shape: LiquidRoundedSuperellipse(
+      //   borderRadius: const Radius.circular(10),
+      // ),
+      // glassContainsChild: false,
+      child: LiquidGlass(
+        shape: LiquidRoundedSuperellipse(
+          borderRadius: 10,
+        ),
+        child: Padding(
+          padding: padding ?? const EdgeInsets.all(8.0),
+          child: child,
+        ),
       ),
     );
   }

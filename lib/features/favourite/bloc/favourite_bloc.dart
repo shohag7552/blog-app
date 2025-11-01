@@ -43,7 +43,7 @@ class FavouriteBloc extends Bloc<FavouriteEvent, FavouriteState> {
 
       print('Loaded ${newPosts?.length} posts, total: ${allPosts?.length}, rich max: ${newPosts?.length == limit}');
       emit(FavouriteLoaded(
-        posts: allPosts??[],
+        posts: /*allPosts??*/[],
         hasReachedMax: newPosts?.length == limit,
       ));
 

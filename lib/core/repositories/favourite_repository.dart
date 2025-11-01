@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:appwrite/appwrite.dart';
 import 'package:blog_project/core/configuratio/appwrite_config.dart';
 import 'package:blog_project/core/models/post_model.dart';
@@ -17,22 +19,55 @@ Future<List<PostModel>?> getFavouritePosts({
         Query.limit(limit),
         Query.offset(offset),
         Query.orderDesc('\$createdAt'),
+        // Query.select([
+        //   '\$id',
+        //   // 'user.*',
+        //   'post.*', // <-- Use '.*' to fetch all attributes of the related post
+        // ]),
       ];
 
       // if (categoryId != null) {
       //   queries.add(Query.equal('category', categoryId));
       // }
 
-      if (authorId != null) {
-        queries.add(Query.equal('user', authorId));
+      final userDocId = await _getUserId();
+
+      if (userDocId.isNotEmpty) {
+        queries.add(Query.equal('user', userDocId));
+        queries.add(Query.select([
+          '\$id',
+          // 'user.*',
+          'post.*', // <-- Use '.*' to fetch all attributes of the related post
+        ]),);
       }
 
+      print('=============queries: $queries');
       final response = await _appwriteService.listTable(
         tableId: AppwriteConfig.likes,
         queries: queries,
       );
-      
-      print('=============response: ${response.rows}');
+
+      final favouritePosts = response.rows.map((likeDoc) {
+        final postData = likeDoc.data['post'];
+
+        if (postData is Map<String, dynamic>) {
+          final postMap = {
+            'id': postData['\$id'],
+            'title': postData['title'],
+            'content': postData['content'],
+            'author_id': postData['author_id'],
+            'photos': postData['photos'],
+            'category_id': postData['category_id'],
+            'tags': postData['tags'],
+            'likes': 1,
+          };
+          return PostModel.fromMap(postMap);
+        }
+        return null;
+      }).whereType<PostModel>().toList();
+
+      print('=============response: ${favouritePosts}');
+      return favouritePosts;
 
       return null;
 
@@ -65,5 +100,19 @@ Future<List<PostModel>?> getFavouritePosts({
     } catch (e) {
       throw Exception('Failed to fetch posts: $e');
     }
+  }
+
+  Future<String> _getUserId() async {
+    final currentUser = await _appwriteService.getCurrentUser();
+
+    final user = await _appwriteService.listTable(
+      tableId: AppwriteConfig.usersCollection,
+      queries: [
+        Query.equal('userId', currentUser.$id),
+      ],
+    );
+    log('====> Fetched user rows count: ${user.total}');
+    final userDocId =  user.rows.isNotEmpty ? user.rows.first.$id : '';
+    return userDocId;
   }
 }

@@ -8,7 +8,7 @@ class GlassTextFieldContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LiquidGlass(
+    return LiquidGlass.withOwnLayer(
       settings: LiquidGlassSettings(
         ambientStrength: 2,
         lightAngle: 0.4 * math.pi,
@@ -17,7 +17,7 @@ class GlassTextFieldContainer extends StatelessWidget {
         blur: 4,
       ),
       shape: LiquidRoundedSuperellipse(
-        borderRadius: const Radius.circular(40),
+        borderRadius: 40,
       ),
       glassContainsChild: false,
       child: child,

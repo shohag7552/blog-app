@@ -128,7 +128,7 @@ class _PostCreateViewState extends State<PostCreateView> {
             child: Column(children: [
               GlassContainer(
                 child: Row(children: [
-                  LiquidGlass(
+                  LiquidGlass.withOwnLayer(
                     // blur: 3,
                     settings: LiquidGlassSettings(
                       blur: 3,
@@ -137,7 +137,7 @@ class _PostCreateViewState extends State<PostCreateView> {
                       glassColor: Colors.white12,
                     ),
                     shape: LiquidRoundedSuperellipse(
-                      borderRadius: const Radius.circular(40),
+                      borderRadius: 40,
                     ),
                     glassContainsChild: false,
                     child: InkWell(
@@ -169,7 +169,7 @@ class _PostCreateViewState extends State<PostCreateView> {
                 
                   BlocBuilder<PostCreateBloc, PostCreateState>(
                     builder: (context, state) {
-                      return LiquidGlass(
+                      return LiquidGlass.withOwnLayer(
                         settings: LiquidGlassSettings(
                           blur: 3,
                           ambientStrength: 0.5,
@@ -177,7 +177,7 @@ class _PostCreateViewState extends State<PostCreateView> {
                           glassColor: Colors.white12,
                         ),
                         shape: LiquidRoundedSuperellipse(
-                          borderRadius: const Radius.circular(10),
+                          borderRadius: 10,
                         ),
                         glassContainsChild: false,
                         child: Padding(
