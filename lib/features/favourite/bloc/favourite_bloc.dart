@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:blog_project/core/models/post_model.dart';
 import 'package:blog_project/core/repositories/favourite_repository.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_state.dart';
@@ -35,15 +38,14 @@ class FavouriteBloc extends Bloc<FavouriteEvent, FavouriteState> {
         authorId: event.authorId,
       );
 
-      final allPosts = event.loadMore
+      List<PostModel>? allPosts = event.loadMore
           ? [...state.posts, ...newPosts??[]]
           : newPosts;
 
       offset += limit;
 
-      print('Loaded ${newPosts?.length} posts, total: ${allPosts?.length}, rich max: ${newPosts?.length == limit}');
       emit(FavouriteLoaded(
-        posts: /*allPosts??*/[],
+        posts: allPosts??[],
         hasReachedMax: newPosts?.length == limit,
       ));
 

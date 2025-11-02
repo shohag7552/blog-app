@@ -69,7 +69,7 @@ class _FavouritePageState extends State<FavouritePage> {
               controller: _scrollController,
               itemCount: state.posts.length,
               padding: const EdgeInsets.only(
-                top: 188,
+                top: 20,
                 left: 16,
                 right: 16,
                 bottom: 16,

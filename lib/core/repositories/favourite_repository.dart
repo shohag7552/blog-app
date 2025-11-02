@@ -51,17 +51,20 @@ Future<List<PostModel>?> getFavouritePosts({
         final postData = likeDoc.data['post'];
 
         if (postData is Map<String, dynamic>) {
-          final postMap = {
-            'id': postData['\$id'],
-            'title': postData['title'],
-            'content': postData['content'],
-            'author_id': postData['author_id'],
-            'photos': postData['photos'],
-            'category_id': postData['category_id'],
-            'tags': postData['tags'],
-            'likes': 1,
-          };
-          return PostModel.fromMap(postMap);
+          PostModel p = PostModel(
+            postId: postData['\$id'] ?? '',
+            title: postData['title'] ?? '',
+            content: postData['content'] ?? '',
+            authorId: postData['author_id'] ?? '',
+            photos: List<String>.from(postData['photos'] ?? []),
+            tags: List<String>.from(postData['tags'] ?? []),
+            likes: 1,
+            createdAt: postData['\$createdAt'] != null ? DateTime.parse(postData['\$createdAt']) : DateTime.now(),
+            updatedAt: postData['\$updatedAt'] != null ? DateTime.parse(postData['\$updatedAt']) : DateTime.now(),
+          );
+
+          print('=============postData map postModel: : ${p}');
+          return p;
         }
         return null;
       }).whereType<PostModel>().toList();

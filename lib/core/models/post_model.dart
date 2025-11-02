@@ -73,6 +73,7 @@ class PostModel extends Equatable {
 
   Map<String, dynamic> toMap() {
     return {
+      'id': postId,
       'title': title,
       'content': content,
       'author': author?.userId,
@@ -82,6 +83,8 @@ class PostModel extends Equatable {
       'createdAt': createdAt?.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
       'image': image?.map((img) => img.path).toList(),
+      'photos': photos,
+      'author_id': authorId,
     };
   }
 
