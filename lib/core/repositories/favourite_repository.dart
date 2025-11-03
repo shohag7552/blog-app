@@ -118,4 +118,36 @@ Future<List<PostModel>?> getFavouritePosts({
     final userDocId =  user.rows.isNotEmpty ? user.rows.first.$id : '';
     return userDocId;
   }
+
+  Future<List<String>> getFavouritePostIds({
+    String? authorId,
+  }) async {
+
+    try {
+      final userDocId = await _getUserId();
+      print('==============getFavouritePostIds called : $userDocId');
+      if (userDocId.isEmpty) {
+        return [];
+      }
+
+      final response = await _appwriteService.listTable(
+        tableId: AppwriteConfig.likes,
+        queries: [
+          Query.limit(100),
+          Query.equal('user', userDocId),
+          Query.orderDesc('\$createdAt'),
+          // Query.select(['post']),
+        ],
+      );
+
+      print('==============getFavouritePostIds response : ${response.rows}');
+
+      final favouritePostIds = response.rows.map((doc) => doc.data['post'] as String).toList();
+
+      log('====> Fetched favourite post IDs: $favouritePostIds');
+      return favouritePostIds;
+    } catch (e) {
+      throw Exception('Failed to fetch favourite post IDs: $e');
+    }
+  }
 }

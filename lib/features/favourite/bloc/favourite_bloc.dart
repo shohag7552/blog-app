@@ -18,7 +18,7 @@ class FavouriteBloc extends Bloc<FavouriteEvent, FavouriteState> {
     // required this.commentRepository,
   }) : super(FavouriteInitial()) {
     on<LoadFavouritePosts>(_onLoadPosts);
-    // on<LoadPostDetail>(_onLoadPostDetail);
+    on<LoadOnlyFavouritePostsIds>(_onLoadPostIds);
     // on<CreatePost>(_onCreatePost);
     // on<UpdatePost>(_onUpdatePost);
     // on<DeletePost>(_onDeletePost);
@@ -54,21 +54,19 @@ class FavouriteBloc extends Bloc<FavouriteEvent, FavouriteState> {
     }
   }
 
-  // Future<void> _onLoadPostDetail(LoadPostDetail event, Emitter<PostState> emit) async {
-  //   try {
-  //     emit(PostLoading());
+  Future<void> _onLoadPostIds(LoadOnlyFavouritePostsIds event, Emitter<FavouriteState> emit) async {
+    try {
+      emit(FavouriteLoading());
 
-  //     final post = await postRepository.getPostById(event.postId);
-  //     final comments = await commentRepository.getCommentsByPost(event.postId);
+      List<String>  postIds = await favouriteRepository.getFavouritePostIds(
+        authorId: event.authorId,
+      );
 
-  //     emit(PostDetailLoaded(
-  //       post: post,
-  //       comments: comments,
-  //     ));
-  //   } catch (e) {
-  //     emit(PostError(e.toString()));
-  //   }
-  // }
+      emit(LoadingOnlyFavouritePostsIds(favouritePostIds: postIds));
+    } catch (e) {
+      emit(FavouriteError(e.toString()));
+    }
+  }
 
   // Future<void> _onCreatePost(CreatePost event, Emitter<PostState> emit) async {
   //   try {

@@ -1,8 +1,11 @@
 import 'dart:developer';
 import 'dart:math' as math;
 
+import 'package:blog_project/core/utils/app_color.dart';
 import 'package:blog_project/core/widgets/custom_snakebar.dart';
 import 'package:blog_project/core/widgets/post_card.dart';
+import 'package:blog_project/features/favourite/bloc/favourite_bloc.dart';
+import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/favourite/pages/favourite_page.dart';
 import 'package:blog_project/features/post_create/pages/post_create_page.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
@@ -34,6 +37,7 @@ class _PostPageState extends State<PostPage> {
     super.initState();
 
     _scrollController.addListener(_onScroll);
+    context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
   }
 
   @override
@@ -71,7 +75,7 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: const Color(0xFF18391E),
+      backgroundColor: AppColor.bgColor,
       endDrawer: DrawerWidget(),
       body: BlocBuilder<PostBloc, PostState>(
         builder: (context, state) {

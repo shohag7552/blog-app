@@ -25,3 +25,14 @@ class LoadFavouritePosts extends FavouriteEvent {
   @override
   List<Object?> get props => [categoryId, authorId, limit, offset, loadMore];
 }
+
+class LoadOnlyFavouritePostsIds extends FavouriteEvent {
+  final String? authorId;
+
+  const LoadOnlyFavouritePostsIds({
+    this.authorId,
+  });
+
+  @override
+  List<Object?> get props => [authorId];
+}

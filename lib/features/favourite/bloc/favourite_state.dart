@@ -37,3 +37,12 @@ class FavouriteError extends FavouriteState {
   @override
   List<Object?> get props => [message];
 }
+
+class LoadingOnlyFavouritePostsIds extends FavouriteState {
+  final List<String> favouritePostIds;
+
+  const LoadingOnlyFavouritePostsIds({this.favouritePostIds = const []});
+
+  @override
+  List<Object?> get props => [favouritePostIds];
+}
