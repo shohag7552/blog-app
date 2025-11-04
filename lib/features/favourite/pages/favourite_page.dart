@@ -79,7 +79,7 @@ class _FavouritePageState extends State<FavouritePage> {
                     bottom: 16,
                   ),
                   itemBuilder: (context, index) {
-                    return PostCard(postModel: state.posts[index]);
+                    return PostCard(postModel: state.posts[index], isFavourite: true);
                   });
             }
           ),

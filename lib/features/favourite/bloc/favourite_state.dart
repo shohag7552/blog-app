@@ -3,9 +3,10 @@ import 'package:equatable/equatable.dart';
 
 abstract class FavouriteState extends Equatable {
   final List<PostModel> posts;
+  final List<String> favouritePostIds;
   final bool hasMore;
 
-  const FavouriteState({this.posts = const [], this.hasMore = true});
+  const FavouriteState({this.posts = const [], this.hasMore = true, this.favouritePostIds = const []});
   @override
   List<Object?> get props => [posts, hasMore];
 }
@@ -39,6 +40,7 @@ class FavouriteError extends FavouriteState {
 }
 
 class LoadingOnlyFavouritePostsIds extends FavouriteState {
+  @override
   final List<String> favouritePostIds;
 
   const LoadingOnlyFavouritePostsIds({this.favouritePostIds = const []});

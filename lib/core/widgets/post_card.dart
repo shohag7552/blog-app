@@ -2,13 +2,16 @@ import 'dart:ui';
 
 import 'package:blog_project/core/models/post_model.dart';
 import 'package:blog_project/core/widgets/network_image.dart';
+import 'package:blog_project/features/favourite/bloc/favourite_bloc.dart';
+import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 class PostCard extends StatelessWidget {
   final PostModel postModel;
-  const PostCard({super.key, required this.postModel});
+  final bool isFavourite;
+  const PostCard({super.key, required this.postModel, required this.isFavourite});
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +52,13 @@ class PostCard extends StatelessWidget {
                               ),
                             ),
                             InkWell(
-                              onTap: () {
+                              onTap: () async {
                                 print('Like post: ${postModel.postId}');
                                 context.read<PostBloc>().add(LikePost(postId: postModel.postId!));
+                                context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
                               },
                               child: Icon(
-                                postModel.likes == 1 ? Icons.favorite_outlined : Icons.favorite_border_rounded,
+                                isFavourite ? Icons.favorite_outlined : Icons.favorite_border_rounded,
                                 color: Colors.white,
                                 size: 24,
                               ),
