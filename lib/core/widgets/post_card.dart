@@ -53,13 +53,18 @@ class PostCard extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () async {
-                                print('Like post: ${postModel.postId}');
+                                // Toggle the like/favorite
                                 context.read<PostBloc>().add(LikePost(postId: postModel.postId!));
-                                context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
+                                
+                                // Wait a bit for the like action to complete, then reload favorite IDs
+                                await Future.delayed(Duration(milliseconds: 500));
+                                if (context.mounted) {
+                                  context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
+                                }
                               },
                               child: Icon(
-                                isFavourite ? Icons.favorite_outlined : Icons.favorite_border_rounded,
-                                color: Colors.white,
+                                isFavourite ? Icons.favorite : Icons.favorite_border_rounded,
+                                color: isFavourite ? Colors.red : Colors.white,
                                 size: 24,
                               ),
                             ),

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:blog_project/core/models/post_model.dart';
 import 'package:blog_project/core/repositories/favourite_repository.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
@@ -56,7 +54,8 @@ class FavouriteBloc extends Bloc<FavouriteEvent, FavouriteState> {
 
   Future<void> _onLoadPostIds(LoadOnlyFavouritePostsIds event, Emitter<FavouriteState> emit) async {
     try {
-      emit(FavouriteLoading());
+      // Don't emit loading state to avoid losing the current favouritePostIds
+      // emit(FavouriteLoading());
 
       List<String>  postIds = await favouriteRepository.getFavouritePostIds(
         authorId: event.authorId,

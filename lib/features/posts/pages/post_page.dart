@@ -62,10 +62,11 @@ class _PostPageState extends State<PostPage> {
       });
     }
 
-    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
       final bloc = context.read<PostBloc>();
       final state = bloc.state;
-      if(mounted && state is PostsLoaded && state.hasReachedMax) {
+      if (mounted && state is PostsLoaded && state.hasReachedMax) {
         log('Loading more posts...');
         context.read<PostBloc>().add(LoadPosts(loadMore: true));
       }
@@ -82,38 +83,45 @@ class _PostPageState extends State<PostPage> {
         builder: (context, favouriteState) {
           return BlocBuilder<PostBloc, PostState>(
             builder: (context, state) {
-              if(state is PostLoading && state.posts.isEmpty) {
+              if (state is PostLoading && state.posts.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
-              }
-              else if(state is PostError && state.posts.isEmpty) {
+              } else if (state is PostError && state.posts.isEmpty) {
                 return Center(child: Text('Error: ${state.message}'));
-              }
-              else if (state is PostDeleted) {
+              } else if (state is PostDeleted) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  customSnakeBar(context, 'Post deleted successfully', isSuccess: true);
+                  customSnakeBar(
+                    context,
+                    'Post deleted successfully',
+                    isSuccess: true,
+                  );
                   context.read<PostBloc>().add(LoadPosts());
                 });
-              }
-              else if (state.posts.isEmpty) {
+              } else if (state.posts.isEmpty) {
                 return const Center(child: Text("No posts yet"));
               }
-                return Stack(children: [
+              return Stack(
+                children: [
                   ListView.builder(
-                      controller: _scrollController,
-                      itemCount: state.posts.length,
-                      padding: const EdgeInsets.only(
-                        top: 188,
-                        left: 16,
-                        right: 16,
-                        bottom: 16,
-                      ),
-                      itemBuilder: (context, index) {
-                       bool isFavourite = favouriteState.favouritePostIds.contains(state.posts[index].postId);
-                        if(isFavourite) {
-                          log('Post ${state.posts[index].postId} is favourite');
-                        }
-                        return PostCard(postModel: state.posts[index], isFavourite: isFavourite);
-                      }),
+                    controller: _scrollController,
+                    itemCount: state.posts.length,
+                    padding: const EdgeInsets.only(
+                      top: 188,
+                      left: 16,
+                      right: 16,
+                      bottom: 16,
+                    ),
+                    itemBuilder: (context, index) {
+                      bool isFavourite = favouriteState.favouritePostIds
+                          .contains(state.posts[index].postId);
+                      if (isFavourite) {
+                        log('Post ${state.posts[index].postId} is favourite');
+                      }
+                      return PostCard(
+                        postModel: state.posts[index],
+                        isFavourite: isFavourite,
+                      );
+                    },
+                  ),
 
                   Positioned(
                     top: 0,
@@ -192,7 +200,7 @@ class _PostPageState extends State<PostPage> {
                                         ),
                                       ),
                                     ],
-                                  )
+                                  ),
                                 ],
                               ),
                               const Spacer(),
@@ -226,9 +234,7 @@ class _PostPageState extends State<PostPage> {
                           ),
                           const SizedBox(height: 8),
                           Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: Row(
                               children: [
                                 Expanded(
@@ -279,7 +285,8 @@ class _PostPageState extends State<PostPage> {
                           const Spacer(),
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 16
+                              horizontal: 8,
+                              vertical: 16,
                             ),
                             child: LiquidGlassLayer(
                               settings: LiquidGlassSettings(
@@ -317,10 +324,14 @@ class _PostPageState extends State<PostPage> {
                                               glassContainsChild: false,
                                               child: InkWell(
                                                 onTap: () {
-                                                  context.read<PostBloc>().add(LoadPosts());
+                                                  context.read<PostBloc>().add(
+                                                    LoadPosts(),
+                                                  );
                                                 },
                                                 child: Padding(
-                                                  padding: const EdgeInsets.all(8.0),
+                                                  padding: const EdgeInsets.all(
+                                                    8.0,
+                                                  ),
                                                   child: Row(
                                                     children: [
                                                       Icon(
@@ -333,9 +344,10 @@ class _PostPageState extends State<PostPage> {
                                                         style: TextStyle(
                                                           color: Colors.white,
                                                           fontSize: 16,
-                                                          fontWeight: FontWeight.w600,
+                                                          fontWeight:
+                                                              FontWeight.w600,
                                                         ),
-                                                      )
+                                                      ),
                                                     ],
                                                   ),
                                                 ),
@@ -346,11 +358,16 @@ class _PostPageState extends State<PostPage> {
                                               onTap: () {
                                                 Navigator.push(
                                                   context,
-                                                  MaterialPageRoute(builder: (context) => FavouritePage()),
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        FavouritePage(),
+                                                  ),
                                                 );
                                               },
                                               child: Padding(
-                                                padding: const EdgeInsets.all(8.0),
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
                                                 child: Icon(
                                                   Icons.favorite_border_rounded,
                                                   color: Colors.white,
@@ -364,7 +381,9 @@ class _PostPageState extends State<PostPage> {
                                     ),
                                     AnimatedSize(
                                       alignment: Alignment.center,
-                                      duration: const Duration(milliseconds: 300),
+                                      duration: const Duration(
+                                        milliseconds: 300,
+                                      ),
                                       curve: Curves.easeOut,
                                       child: SizedBox(
                                         width: _tabSpacing,
@@ -375,21 +394,28 @@ class _PostPageState extends State<PostPage> {
                                     LiquidGlass.withOwnLayer(
                                       // blur: 3,
                                       shape: LiquidRoundedSuperellipse(
-                                        borderRadius:40,
+                                        borderRadius: 40,
                                       ),
                                       glassContainsChild: false,
                                       child: InkWell(
                                         onTap: () {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => PostCreatePage()),
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  PostCreatePage(),
+                                            ),
                                           ).then((_) {
-
-                                            context.read<PostBloc>().add(LoadPosts());
+                                            context.read<PostBloc>().add(
+                                              LoadPosts(),
+                                            );
                                           });
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0,
+                                            vertical: 12,
+                                          ),
                                           child: Row(
                                             children: [
                                               Icon(
@@ -404,7 +430,7 @@ class _PostPageState extends State<PostPage> {
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w600,
                                                 ),
-                                              )
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -426,9 +452,10 @@ class _PostPageState extends State<PostPage> {
                         ],
                       ),
                     ),
-                  )
-                ]);
-            }
+                  ),
+                ],
+              );
+            },
           );
         }
       ),
