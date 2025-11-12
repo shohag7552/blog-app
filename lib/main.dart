@@ -80,3 +80,100 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class DraggableBottomSheetExample extends StatefulWidget {
+  const DraggableBottomSheetExample({super.key});
+
+  @override
+  State<DraggableBottomSheetExample> createState() =>
+      _DraggableBottomSheetExampleState();
+}
+
+class _DraggableBottomSheetExampleState
+    extends State<DraggableBottomSheetExample> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          // Background content
+          Container(
+            color: Colors.blue.shade100,
+            child: const Center(
+              child: Text(
+                "Map or Main Content",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+
+          // Draggable Bottom Sheet
+          DraggableScrollableSheet(
+            initialChildSize: 0.25, // starting height (25% of screen)
+            minChildSize: 0.2,      // minimum height
+            maxChildSize: 0.85,     // maximum expanded height
+            builder: (context, scrollController) {
+              return Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 8,
+                      offset: Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Handle bar
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
+                      child: Container(
+                        height: 5,
+                        width: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+
+                    const Text(
+                      "Nearby Orders",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    // Scrollable content inside the sheet
+                    Expanded(
+                      child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: 20,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.blue.shade200,
+                              child: Text("${index + 1}"),
+                            ),
+                            title: Text("Order #${index + 1}"),
+                            subtitle: const Text("Tap to view details"),
+                            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

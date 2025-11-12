@@ -5,7 +5,8 @@ import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 class GlassContainer extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
-  const GlassContainer({super.key, required this.child, this.padding});
+  final double borderRadius;
+  const GlassContainer({super.key, required this.child, this.padding, this.borderRadius = 10});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +24,7 @@ class GlassContainer extends StatelessWidget {
       // glassContainsChild: false,
       child: LiquidGlass(
         shape: LiquidRoundedSuperellipse(
-          borderRadius: 10,
+          borderRadius: borderRadius,
         ),
         child: Padding(
           padding: padding ?? const EdgeInsets.all(8.0),

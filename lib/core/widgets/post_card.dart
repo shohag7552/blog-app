@@ -1,11 +1,13 @@
 import 'dart:ui';
 
 import 'package:blog_project/core/models/post_model.dart';
+import 'package:blog_project/core/widgets/custom_model_bottom_sheet.dart';
 import 'package:blog_project/core/widgets/network_image.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_bloc.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
+import 'package:blog_project/features/posts/pages/post_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 class PostCard extends StatelessWidget {
@@ -17,15 +19,28 @@ class PostCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(36),
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: CustomNetworkImage(imageUrl: postModel.photos != null && postModel.photos!.isNotEmpty ? postModel.photos?.first??'' : ''),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PostDetailPage(postId: postModel.postId!),
             ),
+          ).then((_) {
+            // Reload posts and favorites when returning from detail page
+            context.read<PostBloc>().add(LoadPosts());
+            context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
+          });
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(36),
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              AspectRatio(
+                aspectRatio: 1,
+                child: CustomNetworkImage(imageUrl: postModel.photos != null && postModel.photos!.isNotEmpty ? postModel.photos?.first??'' : ''),
+              ),
             ClipRRect(
               borderRadius: BorderRadius.only(
                 bottomLeft: Radius.circular(36),
@@ -43,19 +58,51 @@ class PostCard extends StatelessWidget {
                           mainAxisAlignment:
                           MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              postModel.title??'',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                            Expanded(
+                              child: Text(
+                                postModel.title??'',
+                                maxLines: 1, overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
                             ),
+
+                            IconButton(
+                              icon: Icon(Icons.mode_comment_outlined, color: Colors.white, size: 24),
+                              onPressed: () {
+                                showCustomModalBottomSheet(
+                                  context: context,
+                                  child: ListView.builder(
+                                    itemCount: 15,
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    itemBuilder: (context, index) {
+                                      return ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor: Colors.blue[100 * ((index % 8) + 1)],
+                                          child: Text("${index + 1}"),
+                                        ),
+                                        title: Text("Item ${index + 1}", style: TextStyle(color: Colors.white),),
+                                        subtitle: const Text("Tap to select", style: TextStyle(color: Colors.white)),
+                                        onTap: () {
+                                          Navigator.pop(context, "Item ${index + 1}");
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 10),
+
                             InkWell(
                               onTap: () async {
                                 // Toggle the like/favorite
                                 context.read<PostBloc>().add(LikePost(postId: postModel.postId!));
-                                
+
                                 // Wait a bit for the like action to complete, then reload favorite IDs
                                 await Future.delayed(Duration(milliseconds: 500));
                                 if (context.mounted) {
@@ -149,6 +196,7 @@ class PostCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
