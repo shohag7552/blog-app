@@ -75,23 +75,39 @@ class PostCard extends StatelessWidget {
                               onPressed: () {
                                 showCustomModalBottomSheet(
                                   context: context,
-                                  child: ListView.builder(
-                                    itemCount: 15,
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    itemBuilder: (context, index) {
-                                      return ListTile(
-                                        leading: CircleAvatar(
-                                          backgroundColor: Colors.blue[100 * ((index % 8) + 1)],
-                                          child: Text("${index + 1}"),
-                                        ),
-                                        title: Text("Item ${index + 1}", style: TextStyle(color: Colors.white),),
-                                        subtitle: const Text("Tap to select", style: TextStyle(color: Colors.white)),
-                                        onTap: () {
-                                          Navigator.pop(context, "Item ${index + 1}");
+                                  forComment: true,
+                                  onSubmit: (String commentText) {
+                                    // Handle comment submission
+                                    print("Comment submitted: $commentText");
+                                  },
+                                  child: Column(
+                                    children: [
+                                      ListView.builder(
+                                        itemCount: 15,
+                                        shrinkWrap: true,
+                                        physics: NeverScrollableScrollPhysics(),
+                                        itemBuilder: (context, index) {
+                                          return ListTile(
+                                            leading: CircleAvatar(
+                                              backgroundColor: Colors.blue[100 * ((index % 8) + 1)],
+                                              child: Text("${index + 1}"),
+                                            ),
+                                            title: Text(
+                                              "Person ${index + 1}",
+                                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                            ),
+                                            subtitle: const Text(
+                                              "You can't declare the controller directly in the function, as it would be created every time the builder runs, losing state. You need state management within the dialog itself.",
+                                              style: TextStyle(color: Colors.white),
+                                              maxLines: 2, overflow: TextOverflow.ellipsis,
+                                            ),
+                                            onTap: () {
+                                              Navigator.pop(context, "Item ${index + 1}");
+                                            },
+                                          );
                                         },
-                                      );
-                                    },
+                                      ),
+                                    ],
                                   ),
                                 );
                               },

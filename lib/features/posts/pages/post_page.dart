@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:blog_project/core/utils/app_color.dart';
 import 'package:blog_project/core/widgets/custom_snakebar.dart';
+import 'package:blog_project/core/widgets/custom_text_field.dart';
 import 'package:blog_project/core/widgets/post_card.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_bloc.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
@@ -233,56 +234,17 @@ class _PostPageState extends State<PostPage> {
                             ],
                           ),
                           const SizedBox(height: 8),
+
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: LiquidGlass.withOwnLayer(
-                                    settings: LiquidGlassSettings(
-                                      ambientStrength: 2,
-                                      lightAngle: 0.4 * math.pi,
-                                      glassColor: Colors.black12,
-                                      thickness: 30,
-                                      blur: 4,
-                                    ),
-                                    shape: LiquidRoundedSuperellipse(
-                                      borderRadius: 40,
-                                    ),
-                                    glassContainsChild: false,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 4.0),
-                                      child: TextField(
-                                        controller: _searchController,
-                                        focusNode: _searchFocusNode,
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                        ),
-                                        decoration: InputDecoration(
-                                          hintText: 'Search properties...',
-                                          hintStyle: TextStyle(
-                                            color: Colors.white60,
-                                            fontSize: 15,
-                                          ),
-                                          prefixIcon: Icon(
-                                            Icons.search,
-                                            color: Colors.white60,
-                                            size: 22,
-                                          ),
-                                          contentPadding: EdgeInsets.symmetric(
-                                            vertical: 12,
-                                          ),
-                                          border: InputBorder.none,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: CustomTextField(
+                              searchController: _searchController,
+                              prefixIcon: Icon(Icons.search),
+                              hintText: 'Search properties...',
                             ),
                           ),
                           const Spacer(),
+
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
