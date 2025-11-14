@@ -21,8 +21,8 @@ class CommentModel extends Equatable {
   factory CommentModel.fromMap(Map<String, dynamic> map) {
     return CommentModel(
       commentId: map['\$id'] ?? '',
-      content: map['content'] ?? '',
-      postId: map['post'] is Map ? map['post']['\$id'] : map['post'] ?? '',
+      content: map['commentText'] ?? '',
+      postId: map['posts'] ?? '',
       user: map['user'] != null ? UserModel.fromMap(map['user']) : null,
       createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
     );

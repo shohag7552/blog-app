@@ -34,7 +34,7 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
         userId: event.userId,
       );
 
-      emit(CommentCreated(comment));
+      emit(CommentCreated(comment!));
 
       // Reload comments
       add(LoadComments(postId: event.postId));

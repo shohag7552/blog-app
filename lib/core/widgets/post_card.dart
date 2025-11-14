@@ -3,6 +3,9 @@ import 'dart:ui';
 import 'package:blog_project/core/models/post_model.dart';
 import 'package:blog_project/core/widgets/custom_model_bottom_sheet.dart';
 import 'package:blog_project/core/widgets/network_image.dart';
+import 'package:blog_project/features/comments/bloc/comment_bloc.dart';
+import 'package:blog_project/features/comments/bloc/comment_event.dart';
+import 'package:blog_project/features/comments/pages/comment_page.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_bloc.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
@@ -79,36 +82,15 @@ class PostCard extends StatelessWidget {
                                   onSubmit: (String commentText) {
                                     // Handle comment submission
                                     print("Comment submitted: $commentText");
-                                  },
-                                  child: Column(
-                                    children: [
-                                      ListView.builder(
-                                        itemCount: 15,
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemBuilder: (context, index) {
-                                          return ListTile(
-                                            leading: CircleAvatar(
-                                              backgroundColor: Colors.blue[100 * ((index % 8) + 1)],
-                                              child: Text("${index + 1}"),
-                                            ),
-                                            title: Text(
-                                              "Person ${index + 1}",
-                                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                            ),
-                                            subtitle: const Text(
-                                              "You can't declare the controller directly in the function, as it would be created every time the builder runs, losing state. You need state management within the dialog itself.",
-                                              style: TextStyle(color: Colors.white),
-                                              maxLines: 2, overflow: TextOverflow.ellipsis,
-                                            ),
-                                            onTap: () {
-                                              Navigator.pop(context, "Item ${index + 1}");
-                                            },
-                                          );
-                                        },
+                                    context.read<CommentBloc>().add(
+                                      CreateComment(
+                                        content: commentText,
+                                        postId: postModel.postId!,
+                                        userId: '', // Replace with actual user ID
                                       ),
-                                    ],
-                                  ),
+                                    );
+                                  },
+                                  child: CommentPage(postId: postModel.postId!),
                                 );
                               },
                             ),
