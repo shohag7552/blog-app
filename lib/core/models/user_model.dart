@@ -10,6 +10,7 @@ class UserModel extends Equatable {
   final String? avatarUrl;
   final String createdAt;
   final String? hashedPassword;
+  final bool active;
 
   const UserModel({
     this.id = '',
@@ -20,18 +21,20 @@ class UserModel extends Equatable {
     this.avatarUrl,
     required this.createdAt,
     this.hashedPassword,
+    this.active = false,
   });
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
       id: map['\$id'] ?? '',
       userId: map['userId'] ?? '',
-      name: map['name'] ?? '',
+      name: map['username'] ?? '',
       email: map['email'] ?? '',
       bio: map['bio'],
       avatarUrl: map['avatarUrl'],
-      createdAt: map['createdAt'],
+      createdAt: map['\$createdAt'],
       hashedPassword: map['hashed_password'],
+      active: map['isActive'] ?? false,
     );
   }
 

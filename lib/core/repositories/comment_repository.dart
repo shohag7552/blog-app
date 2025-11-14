@@ -9,20 +9,30 @@ class CommentRepository {
   final AppwriteService _appwriteService = AppwriteService();
 
   Future<List<CommentModel>> getCommentsByPost(String postId) async {
-    try {
+    // try {
       final response = await _appwriteService.listTable(
         tableId: AppwriteConfig.commentsCollection,
         queries: [
           Query.equal('postId', postId),
           Query.orderDesc('\$createdAt'),
+          Query.select([
+            '\$id',
+            'commentText',
+            'postId',
+            'user.*',
+          ])
         ],
       );
 
       log('====> Fetched comments count: ${response.total} for postId: $postId');
-      return response.rows.map((doc) => CommentModel.fromMap(doc.data)).toList();
-    } catch (e) {
-      throw Exception('Failed to fetch comments: $e');
-    }
+      return response.rows.map((doc) {
+        print('====> Comment data: ${doc.data}');
+        return CommentModel.fromMap(doc.data);
+      }).toList();
+      // return response.rows.map((doc) => CommentModel.fromMap(doc.data)).toList();
+    // } catch (e) {
+    //   throw Exception('Failed to fetch comments: $e');
+    // }
   }
 
   Future<String> _getUserId() async {
@@ -53,8 +63,8 @@ class CommentRepository {
       final data = {
         'commentText': content,
         'postId': postId,
-        'userId': userDocId,
-        // 'createdAt': DateTime.now().toIso8601String(),
+        // 'userId': userDocId,
+        'user': userDocId,
       };
 
       final response = await _appwriteService.createRow(

@@ -7,14 +7,14 @@ class CommentModel extends Equatable {
   final String commentId;
   final String content;
   final String postId;
-  final UserModel? user;
+  final UserModel user;
   final DateTime createdAt;
 
   const CommentModel({
     required this.commentId,
     required this.content,
     required this.postId,
-    this.user,
+    required this.user,
     required this.createdAt,
   });
 
@@ -22,9 +22,11 @@ class CommentModel extends Equatable {
     return CommentModel(
       commentId: map['\$id'] ?? '',
       content: map['commentText'] ?? '',
-      postId: map['posts'] ?? '',
-      user: map['user'] != null ? UserModel.fromMap(map['user']) : null,
-      createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
+      postId: map['postId'] ?? '',
+      user: UserModel.fromMap(map['user']),
+      createdAt: map['\$createdAt'] != null
+          ? DateTime.parse(map['\$createdAt'])
+          : DateTime.now(),
     );
   }
 
@@ -32,7 +34,7 @@ class CommentModel extends Equatable {
     return {
       'content': content,
       'post': postId,
-      'user': user?.userId,
+      'user': user.userId,
       'createdAt': createdAt.toIso8601String(),
     };
   }

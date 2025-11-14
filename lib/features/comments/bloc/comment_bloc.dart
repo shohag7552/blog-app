@@ -13,15 +13,15 @@ class CommentBloc extends Bloc<CommentEvent, CommentState> {
   }
 
   Future<void> _onLoadComments(LoadComments event, Emitter<CommentState> emit) async {
-    try {
+    // try {
       emit(CommentLoading());
 
       final comments = await commentRepository.getCommentsByPost(event.postId);
 
       emit(CommentsLoaded(comments: comments));
-    } catch (e) {
-      emit(CommentError(e.toString()));
-    }
+    // } catch (e) {
+    //   emit(CommentError(e.toString()));
+    // }
   }
 
   Future<void> _onCreateComment(CreateComment event, Emitter<CommentState> emit) async {
