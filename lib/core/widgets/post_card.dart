@@ -31,8 +31,8 @@ class PostCard extends StatelessWidget {
             ),
           ).then((_) {
             // Reload posts and favorites when returning from detail page
-            context.read<PostBloc>().add(LoadPosts());
-            context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
+            // context.read<PostBloc>().add(LoadPosts());
+            // context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
           });
         },
         child: ClipRRect(

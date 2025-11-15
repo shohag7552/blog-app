@@ -4,6 +4,8 @@ import 'dart:math' as math;
 import 'package:blog_project/core/utils/app_color.dart';
 import 'package:blog_project/core/widgets/custom_snakebar.dart';
 import 'package:blog_project/core/widgets/network_image.dart';
+import 'package:blog_project/features/comments/bloc/comment_bloc.dart';
+import 'package:blog_project/features/comments/bloc/comment_event.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_bloc.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_state.dart';
@@ -282,7 +284,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                comment.user?.name ?? 'Anonymous',
+                                                comment.user.name,
                                                 style: TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 14,
@@ -386,16 +388,25 @@ class _PostDetailPageState extends State<PostDetailPage> {
     );
   }
 
-  void _addComment(BuildContext context, String postId) {
+  Future<void> _addComment(BuildContext context, String postId) async {
     if (_commentController.text.trim().isEmpty) {
       customSnakeBar(context, 'Please enter a comment', isSuccess: false);
       return;
     }
 
+   context.read<CommentBloc>().add(
+      CreateComment(
+        content: _commentController.text.trim(),
+        postId: postId,
+        userId: '', // Replace with actual user ID
+      ),
+    );
     // TODO: Implement add comment functionality
     // You'll need to create a CommentBloc or add comment events to PostBloc
     customSnakeBar(context, 'Comment feature coming soon!', isSuccess: true);
     _commentController.clear();
+    context.read<CommentBloc>().add(LoadComments(postId: widget.postId));
+
   }
 
   void _showDeleteDialog(BuildContext context, String postId) {

@@ -63,8 +63,7 @@ class _PostPageState extends State<PostPage> {
       });
     }
 
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
+    if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
       final bloc = context.read<PostBloc>();
       final state = bloc.state;
       if (mounted && state is PostsLoaded && state.hasReachedMax) {
@@ -112,8 +111,7 @@ class _PostPageState extends State<PostPage> {
                       bottom: 16,
                     ),
                     itemBuilder: (context, index) {
-                      bool isFavourite = favouriteState.favouritePostIds
-                          .contains(state.posts[index].postId);
+                      bool isFavourite = favouriteState.favouritePostIds.contains(state.posts[index].postId);
                       if (isFavourite) {
                         log('Post ${state.posts[index].postId} is favourite');
                       }
