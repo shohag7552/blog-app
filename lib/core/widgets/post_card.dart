@@ -10,7 +10,7 @@ import 'package:blog_project/features/favourite/bloc/favourite_bloc.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
-import 'package:blog_project/features/posts/pages/post_detail_page.dart';
+import 'package:blog_project/features/posts_details/pages/post_detail_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 class PostCard extends StatelessWidget {
@@ -30,9 +30,9 @@ class PostCard extends StatelessWidget {
               builder: (context) => PostDetailPage(postId: postModel.postId!),
             ),
           ).then((_) {
-            // Reload posts and favorites when returning from detail page
-            // context.read<PostBloc>().add(LoadPosts());
-            // context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
+            if (context.mounted) {
+              context.read<PostBloc>().add(const LoadPosts());
+            }
           });
         },
         child: ClipRRect(

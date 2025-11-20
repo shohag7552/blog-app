@@ -11,7 +11,9 @@ import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_state.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
-import 'package:blog_project/features/posts/bloc/posts_state.dart';
+import 'package:blog_project/features/posts_details/bloc/posts_details_bloc.dart';
+import 'package:blog_project/features/posts_details/bloc/posts_details_event.dart';
+import 'package:blog_project/features/posts_details/bloc/posts_details_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
@@ -32,7 +34,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
   @override
   void initState() {
     super.initState();
-    context.read<PostBloc>().add(LoadPostDetail(widget.postId));
+    context.read<PostsDetailsBloc>().add(LoadPostDetail(widget.postId));
     context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
   }
 
@@ -47,21 +49,16 @@ class _PostDetailPageState extends State<PostDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.bgColor,
-      body: BlocListener<PostBloc, PostState>(
-        listener: (context, state) {
-          if (state is PostDeleted) {
-            customSnakeBar(context, 'Post deleted successfully', isSuccess: true);
-            Navigator.pop(context);
-          }
+      body: BlocListener<PostsDetailsBloc, PostsDetailsState>(
+        listener: (context, dState) {
+
         },
         child: BlocBuilder<FavouriteBloc, FavouriteState>(
           builder: (context, favouriteState) {
-            return BlocBuilder<PostBloc, PostState>(
+            return BlocBuilder<PostsDetailsBloc, PostsDetailsState>(
               builder: (context, state) {
-                if (state is PostLoading) {
+                if (state is PostDetailsLoading) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (state is PostError) {
-                  return Center(child: Text('Error: ${state.message}'));
                 } else if (state is! PostDetailLoaded) {
                   return const Center(child: Text('Post not found'));
                 }
@@ -163,12 +160,12 @@ class _PostDetailPageState extends State<PostDetailPage> {
                                     ),
                                     InkWell(
                                       onTap: () async {
-                                        context.read<PostBloc>().add(LikePost(postId: post.postId!));
-                                        await Future.delayed(Duration(milliseconds: 500));
-                                        if (context.mounted) {
-                                          context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
-                                          context.read<PostBloc>().add(LoadPostDetail(widget.postId));
-                                        }
+                                        // context.read<PostBloc>().add(LikePost(postId: post.postId!));
+                                        // await Future.delayed(Duration(milliseconds: 500));
+                                        // if (context.mounted) {
+                                        //   context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
+                                        //   context.read<PostBloc>().add(LoadPostDetail(widget.postId));
+                                        // }
                                       },
                                       child: Icon(
                                         isFavourite ? Icons.favorite : Icons.favorite_border_rounded,

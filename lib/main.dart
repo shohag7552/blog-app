@@ -4,12 +4,11 @@ import 'package:blog_project/core/repositories/favourite_repository.dart';
 import 'package:blog_project/core/repositories/post_repository.dart';
 import 'package:blog_project/features/auth/bloc/auth_bloc.dart';
 import 'package:blog_project/features/auth/pages/auth_wrapper.dart';
-import 'package:blog_project/features/auth/pages/login_page.dart';
 import 'package:blog_project/features/comments/bloc/comment_bloc.dart';
 import 'package:blog_project/features/favourite/bloc/favourite_bloc.dart';
-import 'package:blog_project/features/favourite/bloc/favourite_event.dart';
 import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
+import 'package:blog_project/features/posts_details/bloc/posts_details_bloc.dart';
 import 'package:blog_project/features/profile/bloc/profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,6 +50,12 @@ class MyApp extends StatelessWidget {
               postRepository: context.read<PostRepository>(),
               commentRepository: context.read<CommentRepository>(),
             )..add(const LoadPosts()),
+          ),
+          BlocProvider(
+            create: (context) => PostsDetailsBloc(
+              postRepository: context.read<PostRepository>(),
+              commentRepository: context.read<CommentRepository>(),
+            ),
           ),
           BlocProvider(
             create: (context) => FavouriteBloc(

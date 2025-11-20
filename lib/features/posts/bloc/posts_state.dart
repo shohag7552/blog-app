@@ -29,19 +29,21 @@ class PostsLoaded extends PostState {
   @override
   List<Object?> get props => [posts, hasReachedMax];
 }
-
-class PostDetailLoaded extends PostState {
-  final PostModel post;
-  final List<CommentModel> comments;
-
-  const PostDetailLoaded({
-    required this.post,
-    required this.comments,
-  });
-
-  @override
-  List<Object?> get props => [post, comments];
-}
+//
+// class PostDetailLoaded extends PostState {
+//   final PostModel post;
+//   final List<CommentModel> comments;
+//   final List<PostModel> posts;
+//
+//   const PostDetailLoaded({
+//     required this.post,
+//     required this.comments,
+//     required this.posts,
+//   });
+//
+//   @override
+//   List<Object?> get props => [post, comments, posts];
+// }
 
 // class PostCreated extends PostState {
 //   final PostModel post;

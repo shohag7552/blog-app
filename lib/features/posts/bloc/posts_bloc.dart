@@ -17,7 +17,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     required this.commentRepository,
   }) : super(PostInitial()) {
     on<LoadPosts>(_onLoadPosts);
-    on<LoadPostDetail>(_onLoadPostDetail);
+    // on<LoadPostDetail>(_onLoadPostDetail);
     // on<CreatePost>(_onCreatePost);
     // on<UpdatePost>(_onUpdatePost);
     on<DeletePost>(_onDeletePost);
@@ -55,21 +55,22 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     }
   }
 
-  Future<void> _onLoadPostDetail(LoadPostDetail event, Emitter<PostState> emit) async {
-    try {
-      emit(PostLoading());
-
-      final post = await postRepository.getPostById(event.postId);
-      final comments = await commentRepository.getCommentsByPost(event.postId);
-
-      emit(PostDetailLoaded(
-        post: post,
-        comments: comments,
-      ));
-    } catch (e) {
-      emit(PostError(e.toString()));
-    }
-  }
+  // Future<void> _onLoadPostDetail(LoadPostDetail event, Emitter<PostState> emit) async {
+  //   try {
+  //     emit(PostLoading());
+  //
+  //     final post = await postRepository.getPostById(event.postId);
+  //     final comments = await commentRepository.getCommentsByPost(event.postId);
+  //
+  //     emit(PostDetailLoaded(
+  //       post: post,
+  //       comments: comments,
+  //       posts: state.posts,
+  //     ));
+  //   } catch (e) {
+  //     emit(PostError(e.toString()));
+  //   }
+  // }
 
   // Future<void> _onCreatePost(CreatePost event, Emitter<PostState> emit) async {
   //   try {
@@ -137,7 +138,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       // if (state is PostDetailLoaded) {
         // Keep the existing logic for the detail page, which refreshes the detail view.
         await postRepository.toggleLike(event.postId);
-        add(LoadPostDetail(event.postId));
+        // add(LoadPostDetail(event.postId));
       // }
       // If not loaded, or in a different state, just exit gracefully.
       return;

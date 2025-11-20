@@ -83,6 +83,7 @@ class _PostPageState extends State<PostPage> {
         builder: (context, favouriteState) {
           return BlocBuilder<PostBloc, PostState>(
             builder: (context, state) {
+              print('====PostState: $state');
               if (state is PostLoading && state.posts.isEmpty) {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is PostError && state.posts.isEmpty) {

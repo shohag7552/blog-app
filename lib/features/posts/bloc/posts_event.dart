@@ -1,4 +1,4 @@
-// part of 'posts_bloc.dart';
+// part of 'posts_details_bloc.dart';
 //
 // sealed class PostsEvent extends Equatable {
 //   const PostsEvent();
@@ -34,14 +34,14 @@ class LoadPosts extends PostEvent {
   List<Object?> get props => [categoryId, authorId, limit, offset, loadMore];
 }
 
-class LoadPostDetail extends PostEvent {
-  final String postId;
-
-  const LoadPostDetail(this.postId);
-
-  @override
-  List<Object?> get props => [postId];
-}
+// class LoadPostDetail extends PostEvent {
+//   final String postId;
+//
+//   const LoadPostDetail(this.postId);
+//
+//   @override
+//   List<Object?> get props => [postId];
+// }
 
 // class CreatePost extends PostEvent {
 //   final String title;
