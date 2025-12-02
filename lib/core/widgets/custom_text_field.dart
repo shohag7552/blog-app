@@ -8,7 +8,8 @@ class CustomTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final String hintText;
   final Function(String)? onSubmitted;
-  const CustomTextField({super.key, required this.searchController, this.prefixIcon, required this.hintText, this.onSubmitted});
+  final Function(String)? onChanged;
+  const CustomTextField({super.key, required this.searchController, this.prefixIcon, required this.hintText, this.onSubmitted, this.onChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +34,7 @@ class CustomTextField extends StatelessWidget {
             fontSize: 16,
           ),
           onSubmitted: onSubmitted,
+          onChanged: onChanged,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(

@@ -240,6 +240,9 @@ class _PostPageState extends State<PostPage> {
                               searchController: _searchController,
                               prefixIcon: Icon(Icons.search),
                               hintText: 'Search properties...',
+                              onChanged: (value) {
+                                context.read<PostBloc>().add(SearchPosts(value));
+                              },
                             ),
                           ),
                           const Spacer(),

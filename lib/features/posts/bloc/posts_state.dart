@@ -19,15 +19,33 @@ class PostLoading extends PostState {
 
 class PostsLoaded extends PostState {
   final List<PostModel> posts;
+  final List<PostModel> allPosts;
   final bool hasReachedMax;
+  final String searchQuery;
 
   const PostsLoaded({
     required this.posts,
+    List<PostModel>? allPosts,
     this.hasReachedMax = false,
-  });
+    this.searchQuery = '',
+  }) : allPosts = allPosts ?? posts;
 
   @override
-  List<Object?> get props => [posts, hasReachedMax];
+  List<Object?> get props => [posts, allPosts, hasReachedMax, searchQuery];
+
+  PostsLoaded copyWith({
+    List<PostModel>? posts,
+    List<PostModel>? allPosts,
+    bool? hasReachedMax,
+    String? searchQuery,
+  }) {
+    return PostsLoaded(
+      posts: posts ?? this.posts,
+      allPosts: allPosts ?? this.allPosts,
+      hasReachedMax: hasReachedMax ?? this.hasReachedMax,
+      searchQuery: searchQuery ?? this.searchQuery,
+    );
+  }
 }
 //
 // class PostDetailLoaded extends PostState {

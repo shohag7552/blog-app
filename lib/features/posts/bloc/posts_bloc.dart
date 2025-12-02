@@ -22,6 +22,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     // on<UpdatePost>(_onUpdatePost);
     on<DeletePost>(_onDeletePost);
     on<LikePost>(_onLikePost);
+    on<SearchPosts>(_onSearchPosts);
   }
 
   Future<void> _onLoadPosts(LoadPosts event, Emitter<PostState> emit) async {
@@ -47,6 +48,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       print('Loaded ${newPosts.length} posts, total: ${allPosts.length}, rich max: ${newPosts.length == limit}');
       emit(PostsLoaded(
         posts: allPosts,
+        allPosts: allPosts,
         hasReachedMax: newPosts.length == limit,
       ));
 
@@ -170,10 +172,19 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         // 4. Replace the old post object with the newly fetched/updated post object
         updatedPosts[postIndex] = updatedPost;
 
-        // 5. Emit a NEW PostsLoaded state with the updated list
+        // 5. Also update allPosts to keep them in sync
+        final allPostIndex = currentState.allPosts.indexWhere((p) => p.postId == event.postId);
+        final List<PostModel> updatedAllPosts = List.from(currentState.allPosts);
+        if (allPostIndex != -1) {
+          updatedAllPosts[allPostIndex] = updatedPost;
+        }
+
+        // 6. Emit a NEW PostsLoaded state with the updated lists
         emit(PostsLoaded(
           posts: updatedPosts,
+          allPosts: updatedAllPosts,
           hasReachedMax: currentState.hasReachedMax,
+          searchQuery: currentState.searchQuery,
         ));
       }
 
@@ -182,5 +193,33 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       // emit(PostError(e.toString(), posts: currentState.posts));
       emit(PostError(e.toString()));
     }
+  }
+
+  void _onSearchPosts(SearchPosts event, Emitter<PostState> emit) {
+    if (state is! PostsLoaded) return;
+
+    final currentState = state as PostsLoaded;
+    final query = event.query.toLowerCase().trim();
+
+    if (query.isEmpty) {
+      // If query is empty, show all posts
+      emit(currentState.copyWith(
+        posts: currentState.allPosts,
+        searchQuery: '',
+      ));
+      return;
+    }
+
+    // Filter posts by title and content
+    final filteredPosts = currentState.allPosts.where((post) {
+      final title = post.title?.toLowerCase() ?? '';
+      final content = post.content?.toLowerCase() ?? '';
+      return title.contains(query) || content.contains(query);
+    }).toList();
+
+    emit(currentState.copyWith(
+      posts: filteredPosts,
+      searchQuery: query,
+    ));
   }
 }

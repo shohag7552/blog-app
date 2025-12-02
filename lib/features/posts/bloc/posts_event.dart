@@ -102,3 +102,12 @@ class LikePost extends PostEvent {
   @override
   List<Object?> get props => [postId/*, currentLikes*/];
 }
+
+class SearchPosts extends PostEvent {
+  final String query;
+
+  const SearchPosts(this.query);
+
+  @override
+  List<Object?> get props => [query];
+}
