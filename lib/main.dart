@@ -10,6 +10,8 @@ import 'package:blog_project/features/posts/bloc/posts_bloc.dart';
 import 'package:blog_project/features/posts/bloc/posts_event.dart';
 import 'package:blog_project/features/posts_details/bloc/posts_details_bloc.dart';
 import 'package:blog_project/features/profile/bloc/profile_bloc.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +19,11 @@ import 'features/post_create/bloc/post_create_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
+  runApp(DevicePreview(
+    enabled: true, //!kReleaseMode,
+    builder: (context) => MyApp(), // Wrap your app
+  ),);
+
 }
 
 class MyApp extends StatelessWidget {
@@ -79,6 +85,12 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           home: const AuthWrapper(),
+          useInheritedMediaQuery: true,
+          locale: DevicePreview.locale(context),
+          builder: DevicePreview.appBuilder,
+          // theme: ThemeData.light(),
+          darkTheme: ThemeData.dark(),
+          // home: const HomePage(),
         ),
       ),
     );

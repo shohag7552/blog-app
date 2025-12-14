@@ -36,3 +36,21 @@ class LoadOnlyFavouritePostsIds extends FavouriteEvent {
   @override
   List<Object?> get props => [authorId];
 }
+
+class AddToFavourite extends FavouriteEvent {
+  final String postId;
+
+  const AddToFavourite({required this.postId});
+
+  @override
+  List<Object?> get props => [postId];
+}
+
+class RemoveFromFavourite extends FavouriteEvent {
+  final String postId;
+
+  const RemoveFromFavourite({required this.postId});
+
+  @override
+  List<Object?> get props => [postId];
+}

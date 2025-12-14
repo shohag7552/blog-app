@@ -97,15 +97,20 @@ class PostCard extends StatelessWidget {
                             const SizedBox(width: 10),
 
                             InkWell(
-                              onTap: () async {
-                                // Toggle the like/favorite
-                                context.read<PostBloc>().add(LikePost(postId: postModel.postId!));
-
-                                // Wait a bit for the like action to complete, then reload favorite IDs
-                                await Future.delayed(Duration(milliseconds: 500));
-                                if (context.mounted) {
-                                  context.read<FavouriteBloc>().add(LoadOnlyFavouritePostsIds());
+                              onTap: () {
+                                // Toggle favorite immediately for responsive UI
+                                if (isFavourite) {
+                                  context.read<FavouriteBloc>().add(
+                                    RemoveFromFavourite(postId: postModel.postId!)
+                                  );
+                                } else {
+                                  context.read<FavouriteBloc>().add(
+                                    AddToFavourite(postId: postModel.postId!)
+                                  );
                                 }
+                                
+                                // Also trigger the like on the post
+                                context.read<PostBloc>().add(LikePost(postId: postModel.postId!));
                               },
                               child: Icon(
                                 isFavourite ? Icons.favorite : Icons.favorite_border_rounded,

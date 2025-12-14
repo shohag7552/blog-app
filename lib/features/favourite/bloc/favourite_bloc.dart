@@ -17,6 +17,8 @@ class FavouriteBloc extends Bloc<FavouriteEvent, FavouriteState> {
   }) : super(FavouriteInitial()) {
     on<LoadFavouritePosts>(_onLoadPosts);
     on<LoadOnlyFavouritePostsIds>(_onLoadPostIds);
+    on<AddToFavourite>(_onAddToFavourite);
+    on<RemoveFromFavourite>(_onRemoveFromFavourite);
     // on<CreatePost>(_onCreatePost);
     // on<UpdatePost>(_onUpdatePost);
     // on<DeletePost>(_onDeletePost);
@@ -62,6 +64,30 @@ class FavouriteBloc extends Bloc<FavouriteEvent, FavouriteState> {
       );
 
       emit(LoadingOnlyFavouritePostsIds(favouritePostIds: postIds));
+    } catch (e) {
+      emit(FavouriteError(e.toString()));
+    }
+  }
+
+  Future<void> _onAddToFavourite(AddToFavourite event, Emitter<FavouriteState> emit) async {
+    try {
+      // Optimistically add to the list for immediate UI update
+      final currentIds = List<String>.from(state.favouritePostIds);
+      if (!currentIds.contains(event.postId)) {
+        currentIds.add(event.postId);
+        emit(LoadingOnlyFavouritePostsIds(favouritePostIds: currentIds));
+      }
+    } catch (e) {
+      emit(FavouriteError(e.toString()));
+    }
+  }
+
+  Future<void> _onRemoveFromFavourite(RemoveFromFavourite event, Emitter<FavouriteState> emit) async {
+    try {
+      // Optimistically remove from the list for immediate UI update
+      final currentIds = List<String>.from(state.favouritePostIds);
+      currentIds.remove(event.postId);
+      emit(LoadingOnlyFavouritePostsIds(favouritePostIds: currentIds));
     } catch (e) {
       emit(FavouriteError(e.toString()));
     }
